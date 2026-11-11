@@ -1,0 +1,37 @@
+# ============================================================
+# SEGURIDAD Y CONFIGURACIÓN - MINAS BURGUER
+# ============================================================
+
+# 1. Evitar que se listen los directorios (si intentan entrar a /uploads/ sin archivo)
+Options -Indexes
+
+# 2. Proteger archivos sensibles (Evitar que los vean por URL)
+<FilesMatch "^(\.env|\.git|\.htaccess|config\.php|instalar_datos\.php|.*\.sql|.*\.log|.*\.bak)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# 3. Cabeceras de Seguridad (Anti Clickjacking y XSS)
+<IfModule mod_headers.c>
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set X-Content-Type-Options "nosniff"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# 4. Bloquear intentos de Inyección SQL básicos en las URLs
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Bloquear palabras clave de SQL en los parámetros GET/POST
+    RewriteCond %{QUERY_STRING} [a-zA-Z0-9_]=http:// [OR]
+    RewriteCond %{QUERY_STRING} [a-zA-Z0-9_]=(\.\.//?)+ [OR]
+    RewriteCond %{QUERY_STRING} [a-zA-Z0-9_]=/([a-z0-9_.]//?)+ [NC,OR]
+    RewriteCond %{QUERY_STRING} \=PHP[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12} [NC,OR]
+    RewriteCond %{QUERY_STRING} (union|select|insert|drop|update|delete|alter|create|truncate).* [NC]
+    RewriteRule ^(.*)$ - [F,L]
+</IfModule>
+
+# 5. Bloquear acceso a carpetas de sistema o backups
+RedirectMatch 403 ^/logs/.*$
+RedirectMatch 403 ^/backups/.*$

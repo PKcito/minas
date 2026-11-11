@@ -1,0 +1,95 @@
+/* ============================================================
+   ESTILOS DE GESTIÓN DE PRODUCTOS - MINAS BURGUER
+   ============================================================ */
+
+/* Utilidades generales para esta página */
+.d-none { display: none !important; }
+.d-inline { display: inline; }
+.col-full { grid-column: 1 / -1; }
+.card-mb { margin-bottom: 2rem; }
+.text-hint { font-weight: 400; color: var(--texto-secundario); }
+.text-muted-sm { color: var(--texto-secundario); font-size: 0.8rem; }
+.btn-sm { padding: 0.5rem 1.2rem; }
+
+/* Título dentro de las tarjetas */
+.tabla-titulo { margin-bottom: 1rem; color: var(--texto-principal); }
+
+/* Icono en la tabla cuando no hay imagen */
+.tabla-img-icon { font-size: 1.5rem; color: var(--color-acento); }
+
+/* Botón de guardar en el formulario de crear */
+.btn-guardar { margin-top: 1rem; padding: 0.6rem 2rem; }
+
+/* Grid de checkboxes de extras */
+.extras-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.extra-check-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.7rem;
+    background: var(--bg-principal);
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 0.85rem;
+    color: var(--texto-principal);
+}
+
+.extra-check-item:hover { border-color: var(--color-acento); }
+.extra-check-item input[type="checkbox"] { accent-color: var(--color-acento); cursor: pointer; }
+
+.extra-check-item.seleccionado {
+    border-color: var(--color-acento);
+    background: var(--color-acento-claro);
+}
+
+/* Extras heredados (de la categoría) */
+.extra-check-item.heredado {
+    border-color: #28a745;
+    background: rgba(40, 167, 69, 0.08);
+    cursor: not-allowed;
+}
+body.dark-mode .extra-check-item.heredado { background: rgba(40, 167, 69, 0.15); }
+.extra-check-item.heredado input[type="checkbox"] { cursor: not-allowed; accent-color: #28a745; }
+
+/* Etiqueta de precio del extra dentro del checkbox */
+.extra-precio-sm { color: var(--texto-secundario); margin-left: auto; }
+
+/* Caja de información de "extras heredados" */
+.info-heredados {
+    font-size: 0.78rem;
+    color: var(--texto-secundario);
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.7rem;
+    background: rgba(40, 167, 69, 0.08);
+    border-left: 3px solid #28a745;
+    border-radius: 6px;
+}
+body.dark-mode .info-heredados { background: rgba(40, 167, 69, 0.15); }
+
+/* Texto cuando no hay imagen actual en el modal */
+.imagen-actual-text { color: var(--texto-secundario); font-size: 0.8rem; }
+
+/* Contenedor de acciones del modal (botones Cancelar/Actualizar) */
+.modal-acciones {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+/* Preview de imagen en la tabla */
+.producto-imagen-preview {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid var(--borde);
+}

@@ -1,0 +1,65 @@
+/* ============================================================
+   ESTILOS DEL COMPROBANTE DE PAGO
+   ============================================================ */
+
+/* Utilidad para ocultar */
+.d-none { display: none !important; }
+
+.comprobante-container { max-width: 520px; margin: 0 auto; padding: 2rem 1rem; }
+.comprobante-card { background: var(--bg-secundario); border-radius: 16px; padding: 2rem; box-shadow: 0 4px 12px var(--sombra); border: 1px solid var(--borde); }
+.comprobante-card h2 { text-align: center; color: var(--texto-principal); margin-bottom: 0.5rem; font-size: 1.4rem; }
+.comprobante-card .subtitulo { text-align: center; color: var(--texto-secundario); font-size: 0.9rem; margin-bottom: 1.5rem; line-height: 1.5; }
+
+.monto-box { background: var(--color-acento-claro); border-left: 4px solid var(--color-acento); padding: 0.9rem 1rem; border-radius: 10px; margin-bottom: 1.5rem; text-align: center; }
+.monto-box .label { font-size: 0.75rem; color: var(--texto-secundario); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
+.monto-box .valor { font-size: 1.6rem; font-weight: 800; color: var(--color-acento); margin-top: 0.1rem; }
+
+/* Zona de arrastrar y soltar (Drag & Drop) */
+.upload-area { 
+    display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; 
+    gap: 0.4rem; min-height: 180px !important; height: auto !important; padding: 2rem 1.5rem !important; 
+    border: 2px dashed var(--borde) !important; border-radius: 14px !important; text-align: center; cursor: pointer; 
+    transition: 0.2s; background: var(--bg-principal); box-sizing: border-box; width: 100%; 
+}
+.upload-area:hover { border-color: var(--color-acento); background: var(--color-acento-claro); }
+.upload-area .icono-subida { font-size: 2.5rem; color: var(--color-acento); line-height: 1; display: block; margin-bottom: 0.5rem; }
+.upload-area .texto-subida { color: var(--texto-principal); font-weight: 600; font-size: 0.95rem; display: block; line-height: 1.3; }
+.upload-area .texto-info { color: var(--texto-secundario); font-size: 0.8rem; display: block; line-height: 1.3; }
+.upload-area input[type="file"] { display: none !important; }
+
+/* Previsualización */
+.preview-container { display: none; margin-top: 1rem; text-align: center; }
+.preview-container.activo { display: block; }
+.preview-wrapper { position: relative; display: inline-block; max-width: 100%; }
+.preview-imagen { max-width: 100%; max-height: 300px; border-radius: 12px; border: 2px solid var(--borde); cursor: pointer; transition: 0.2s; display: block; }
+.preview-imagen:hover { border-color: var(--color-acento); transform: scale(1.02); }
+.preview-pdf { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; background: var(--bg-principal); border: 2px solid var(--borde); border-radius: 12px; cursor: pointer; }
+.preview-pdf i { font-size: 3rem; color: #d32f2f; margin-bottom: 0.5rem; }
+.preview-pdf span { color: var(--texto-secundario); font-size: 0.85rem; word-break: break-all; }
+.preview-info { margin-top: 0.75rem; padding: 0.6rem 1rem; background: #e8f5e9; color: #2e7d32; border-radius: 10px; display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; font-weight: 600; }
+body.dark-mode .preview-info { background: #1e3a2a; color: #a5d6a7; }
+
+/* Botones */
+.btn-cambiar { margin-top: 0.75rem; background: transparent; border: 1px solid var(--borde); color: var(--texto-secundario); padding: 0.45rem 1rem; border-radius: 50px; font-size: 0.8rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: 0.2s; display: inline-flex; align-items: center; gap: 0.4rem; }
+.btn-cambiar:hover { border-color: var(--color-acento); color: var(--color-acento); }
+
+.btn-enviar { width: 100%; background: var(--color-acento); color: #fff; border: none; padding: 0.9rem 1.5rem; border-radius: 50px; font-weight: 700; font-size: 1rem; cursor: pointer; margin-top: 1.25rem; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; font-family: inherit; transition: 0.2s; }
+.btn-enviar:hover { background: var(--color-acento-hover); transform: scale(0.98); }
+.btn-enviar:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* Clases para el enlace de volver */
+.volver-pedido { text-align: center; margin-top: 1rem; }
+.btn-volver-pedido { color: var(--color-acento); font-size: 0.9rem; text-decoration: none; transition: 0.2s; }
+.btn-volver-pedido:hover { text-decoration: underline; }
+
+/* Modal de Previsualización */
+.modal-preview { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 3000; justify-content: center; align-items: center; padding: 2rem; backdrop-filter: blur(4px); }
+.modal-preview.activo { display: flex; }
+.modal-preview img { max-width: 100%; max-height: 90vh; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+.modal-preview .cerrar-preview { position: absolute; top: 1.5rem; right: 1.5rem; background: #d32f2f; color: #fff; border: none; width: 42px; height: 42px; border-radius: 50%; font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.modal-preview .cerrar-preview:hover { background: #b71c1c; }
+
+@media (max-width: 500px) { 
+    .comprobante-card { padding: 1.5rem 1.2rem; } 
+    .upload-area { min-height: 150px !important; padding: 1.5rem 1rem !important; } 
+}

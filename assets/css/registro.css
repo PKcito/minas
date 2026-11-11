@@ -1,0 +1,50 @@
+/* ============================================================
+   ESTILOS COMPLEMENTARIOS DE REGISTRO (AUTH)
+   ============================================================ */
+
+.marca-acento {
+    color: var(--color-acento);
+}
+
+.registro-tel-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.registro-prefijo {
+    width: 110px;
+    padding: 0.8rem;
+    border: 1px solid var(--input-border, var(--borde));
+    border-radius: 12px;
+    background: var(--input-bg);
+    color: var(--texto-principal);
+    font-family: inherit;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+}
+
+.registro-numero {
+    flex: 1;
+    padding: 0.8rem;
+    border: 1px solid var(--input-border, var(--borde));
+    border-radius: 12px;
+    background: var(--input-bg);
+    color: var(--texto-principal);
+    font-family: inherit;
+    font-size: 0.95rem;
+}
+
+.registro-whatsapp-hint {
+    color: var(--texto-secundario);
+    font-size: 0.75rem;
+    display: block;
+    margin-top: 0.3rem;
+}
+
+.icono-wa {
+    color: #25D366;
+}
+
+.link-volver-mt {
+    margin-top: 1rem;
+}

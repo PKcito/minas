@@ -1,0 +1,38 @@
+/* ============================================================
+   ESTILOS DE GENERACIÓN DE REPORTES (ADMIN)
+   ============================================================ */
+
+.reportes-main {
+    max-width: 900px;
+    padding: 2rem 0;
+}
+
+.reportes-info-box {
+    background: var(--color-acento-claro);
+    border-left: 4px solid var(--color-acento);
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.25rem;
+    color: var(--texto-principal);
+    font-size: 0.85rem;
+}
+
+.reportes-card {
+    margin-bottom: 1.25rem;
+}
+
+.reportes-subtitulo {
+    margin-bottom: 1rem;
+    color: var(--texto-principal);
+}
+
+.reportes-acciones {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.btn-generar-pdf {
+    padding: 0.75rem 2rem;
+    font-size: 0.95rem;
+}

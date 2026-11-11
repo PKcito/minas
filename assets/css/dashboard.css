@@ -1,0 +1,89 @@
+/* ============================================================
+   ESTILOS DEL DASHBOARD ADMIN - MINAS BURGUER
+   ============================================================ */
+
+/* Dashboard Header */
+.dashboard-header { margin-bottom: 1.5rem; }
+.dashboard-header h2 { font-size: 1.8rem; color: var(--texto-principal); display: flex; align-items: center; gap: 0.5rem; }
+.dashboard-header h2 i { color: var(--color-acento); }
+
+/* Filtros */
+.filtros-card { background: var(--bg-secundario); border-radius: 12px; padding: 1rem; border: 1px solid var(--borde); margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; gap: 0.8rem; align-items: flex-end; box-shadow: 0 4px 10px var(--sombra); }
+.filtro-item { flex: 1; min-width: 120px; }
+.filtro-item label { display: block; font-size: 0.75rem; color: var(--texto-secundario); font-weight: 600; margin-bottom: 0.2rem; text-transform: uppercase; }
+.filtro-item input, .filtro-item select { width: 100%; padding: 0.5rem; border-radius: 8px; border: 1px solid var(--borde); background: var(--bg-principal); color: var(--texto-principal); font-size: 0.85rem; }
+.filtros-acciones { display: flex; gap: 0.5rem; }
+.btn-filtro { padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; border: none; display: flex; align-items: center; gap: 0.4rem; transition: 0.2s; text-decoration: none; }
+.btn-filtro-aplicar { background: var(--color-acento); color: #fff; }
+.btn-filtro-aplicar:hover { background: var(--color-acento-hover); }
+.btn-filtro-limpiar { background: var(--bg-principal); color: var(--texto-secundario); border: 1px solid var(--borde); }
+.btn-filtro-limpiar:hover { border-color: var(--color-acento); color: var(--color-acento); }
+
+/* KPIs */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+.kpi-card { background: var(--bg-secundario); border-radius: 16px; padding: 1.5rem; border: 1px solid var(--borde); box-shadow: 0 4px 15px var(--sombra); display: flex; align-items: center; gap: 1.2rem; transition: transform 0.2s; }
+.kpi-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px var(--sombra); }
+.kpi-icon { width: 55px; height: 55px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
+.kpi-icon.ventas { background: rgba(40, 167, 69, 0.15); color: #28a745; }
+.kpi-icon.pedidos { background: rgba(0, 123, 255, 0.15); color: #007bff; }
+.kpi-icon.ticket { background: rgba(255, 193, 7, 0.15); color: #ffc107; }
+.kpi-icon.promedio { background: rgba(156, 39, 176, 0.15); color: #9c27b0; }
+.kpi-info .label { font-size: 0.8rem; color: var(--texto-secundario); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.kpi-info .valor { font-size: 1.8rem; font-weight: 800; color: var(--texto-principal); line-height: 1.1; margin-top: 0.2rem; }
+
+/* Accesos Rápidos */
+.accesos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+.acceso-card { background: var(--bg-secundario); border: 1px solid var(--borde); border-radius: 12px; padding: 1rem; text-align: center; text-decoration: none; color: var(--texto-principal); transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+.acceso-card:hover { border-color: var(--color-acento); background: var(--color-acento-claro); transform: translateY(-2px); }
+.acceso-card i { font-size: 1.5rem; color: var(--color-acento); }
+.acceso-card span { font-size: 0.85rem; font-weight: 600; }
+
+/* Gráficos */
+.graficos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+.grafico-card { background: var(--bg-secundario); border-radius: 16px; padding: 1.5rem; border: 1px solid var(--borde); box-shadow: 0 4px 15px var(--sombra); overflow: hidden; display: flex; flex-direction: column; }
+.grafico-card.full { grid-column: 1 / -1; }
+.grafico-card.half { grid-column: span 2; }
+.grafico-card h3 { font-size: 1rem; color: var(--texto-principal); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
+.grafico-card h3 i { color: var(--color-acento); }
+.grafico-wrapper { position: relative; width: 100%; height: 280px; }
+.grafico-wrapper.pie { height: 240px; }
+
+/* Tabla Recientes */
+.tabla-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.tabla-responsive::-webkit-scrollbar { height: 6px; }
+.tabla-responsive::-webkit-scrollbar-thumb { background: var(--borde); border-radius: 10px; }
+
+.recientes-tabla { width: 100%; border-collapse: collapse; margin: 0; }
+.recientes-tabla th { text-align: left; padding: 0.8rem 0.5rem; font-size: 0.75rem; color: var(--texto-secundario); text-transform: uppercase; border-bottom: 2px solid var(--borde); white-space: nowrap; }
+.recientes-tabla td { padding: 0.8rem 0.5rem; border-bottom: 1px solid var(--borde); font-size: 0.85rem; color: var(--texto-principal); white-space: nowrap; }
+.recientes-tabla tr:last-child td { border-bottom: none; }
+.recientes-tabla tr:hover td { background: var(--bg-principal); }
+.badge-mini { padding: 0.2rem 0.6rem; border-radius: 50px; font-size: 0.7rem; font-weight: 700; color: #000; display: inline-block; }
+
+/* Listas de Progreso */
+.lista-progreso { display: flex; flex-direction: column; gap: 1.2rem; max-height: 250px; overflow-y: auto; padding-right: 0.5rem; }
+.lista-progreso::-webkit-scrollbar { width: 6px; }
+.lista-progreso::-webkit-scrollbar-thumb { background: var(--borde); border-radius: 10px; }
+.lista-progreso::-webkit-scrollbar-thumb:hover { background: var(--color-acento); }
+.lista-progreso::-webkit-scrollbar-track { background: transparent; }
+
+.progreso-item { display: flex; align-items: center; gap: 1rem; flex-shrink: 0; }
+.progreso-icono { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; flex-shrink: 0; }
+.progreso-icono.cat { background: rgba(211, 47, 47, 0.15); color: #d32f2f; }
+.progreso-icono.prod { background: rgba(255, 152, 0, 0.15); color: #ff9800; }
+.progreso-icono.cli { background: rgba(156, 39, 176, 0.15); color: #9c27b0; }
+
+.progreso-info { flex: 1; min-width: 0; }
+.progreso-header { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; color: var(--texto-principal); margin-bottom: 0.4rem; }
+.progreso-header span:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 10px; }
+.progreso-header span:last-child { color: var(--color-acento); flex-shrink: 0; }
+.progreso-barra-bg { width: 100%; height: 8px; background: var(--borde); border-radius: 10px; overflow: hidden; }
+.progreso-barra-fill { height: 100%; border-radius: 10px; transition: width 0.5s ease; }
+.progreso-barra-fill.cat { background: linear-gradient(90deg, #d32f2f, #ff5252); }
+.progreso-barra-fill.prod { background: linear-gradient(90deg, #ff9800, #ffb74d); }
+.progreso-barra-fill.cli { background: linear-gradient(90deg, #9c27b0, #ce93d8); }
+
+@media (max-width: 900px) {
+    .graficos-grid { grid-template-columns: 1fr; }
+    .grafico-card.half { grid-column: 1 / -1; }
+}

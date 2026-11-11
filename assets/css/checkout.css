@@ -1,0 +1,100 @@
+/* ============================================================
+   ESTILOS DEL CHECKOUT
+   ============================================================ */
+
+.checkout-container { max-width: 700px; margin: 0 auto; padding: 2rem 0; }
+.checkout-titulo { font-size: 2rem; margin-bottom: 1rem; }
+
+/* Clase universal para ocultar elementos */
+.hidden { display: none !important; }
+
+/* Pasos (Steps) */
+.step { background: var(--bg-secundario); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 4px 12px var(--sombra); border: 1px solid var(--borde); }
+.step h3 { color: var(--texto-principal); margin-bottom: 1rem; font-size: 1.05rem; display: flex; align-items: center; gap: 0.5rem; }
+.step h3 i { color: var(--color-acento); }
+
+/* Clases para los estilos en línea que quitamos del HTML */
+.direccion-titulo-h4 {
+    color: var(--texto-principal);
+    margin-bottom: 0.5rem;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+.linea-referencia { font-style: italic; }
+.icon-xs { font-size: 0.7rem; }
+.sin-direcciones-msg { color: var(--texto-secundario); font-size: 0.9rem; }
+.ayuda-texto {
+    color: var(--texto-secundario);
+    font-size: 0.75rem;
+    display: block;
+    margin-top: 0.4rem;
+}
+.monto-destacado {
+    color: var(--color-acento);
+    font-weight: 700;
+}
+.pago-movil-nota {
+    margin-top: 0.75rem;
+    color: var(--texto-secundario);
+    font-size: 0.85rem;
+}
+
+/* Direcciones */
+.direcciones-checkout { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.75rem; }
+.direccion-checkout { position: relative; background: var(--bg-principal); border: 2px solid var(--borde); border-radius: 12px; padding: 0.8rem; cursor: pointer; transition: 0.2s; display: flex; gap: 0.8rem; align-items: flex-start; }
+.direccion-checkout:hover { border-color: var(--color-acento); }
+.direccion-checkout input[type="radio"] { margin-top: 0.5rem; accent-color: var(--color-acento); cursor: pointer; flex-shrink: 0; width: 18px; height: 18px; }
+.direccion-checkout.seleccionada { border-color: var(--color-acento); background: var(--color-acento-claro); }
+.dir-checkout-icono { width: 38px; height: 38px; border-radius: 10px; background: var(--bg-secundario); border: 1px solid var(--borde); display: flex; align-items: center; justify-content: center; color: var(--color-acento); font-size: 1rem; flex-shrink: 0; }
+.direccion-checkout.seleccionada .dir-checkout-icono { background: var(--color-acento); color: #fff; border-color: var(--color-acento); }
+.dir-checkout-info { flex: 1; min-width: 0; }
+.dir-checkout-titulo { font-weight: 700; color: var(--texto-principal); font-size: 0.9rem; display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.15rem; }
+.dir-checkout-tipo { background: var(--borde); color: var(--texto-secundario); padding: 0.1rem 0.4rem; border-radius: 50px; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; }
+.dir-checkout-badge { background: #28a745; color: #fff; padding: 0.1rem 0.4rem; border-radius: 50px; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; }
+.dir-checkout-linea { color: var(--texto-secundario); font-size: 0.8rem; line-height: 1.35; }
+
+/* Radio Cards (Entrega/Pago) */
+.radio-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+.radio-card { position: relative; background: var(--bg-principal); border: 2px solid var(--borde); border-radius: 12px; padding: 0.9rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 0.6rem; }
+.radio-card:hover { border-color: var(--color-acento); }
+.radio-card input[type="radio"] { accent-color: var(--color-acento); cursor: pointer; flex-shrink: 0; }
+.radio-card.seleccionada { border-color: var(--color-acento); background: var(--color-acento-claro); }
+.radio-card .radio-icono { color: var(--color-acento); font-size: 1.2rem; }
+.radio-card .radio-texto { font-weight: 600; color: var(--texto-principal); font-size: 0.9rem; }
+.radio-card .radio-sub { display: block; font-size: 0.7rem; color: var(--texto-secundario); font-weight: 400; margin-top: 0.1rem; }
+
+/* Caja de datos de PagoMóvil */
+.datos-pago-box { background: var(--bg-principal); border: 2px solid var(--color-acento); border-radius: 12px; padding: 1rem; margin-top: 0.75rem; }
+.datos-pago-box h4 { color: var(--color-acento); margin-bottom: 0.75rem; font-size: 0.95rem; display: flex; align-items: center; gap: 0.4rem; }
+.datos-pago-box .dato { display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 1px dashed var(--borde); font-size: 0.9rem; color: var(--texto-principal); }
+.datos-pago-box .dato:last-child { border-bottom: none; }
+.datos-pago-box .dato strong { color: var(--texto-secundario); font-weight: 600; }
+
+/* Input con botones + y - */
+.input-number-group { display: flex; align-items: stretch; max-width: 320px; border: 1.5px solid var(--borde); border-radius: 12px; overflow: hidden; background: var(--input-bg); transition: border-color 0.2s, box-shadow 0.2s; }
+.input-number-group:focus-within { border-color: var(--color-acento); box-shadow: 0 0 0 3px var(--color-acento-claro); }
+.input-number-btn { width: 44px; min-width: 44px; background: var(--bg-principal); border: none; color: var(--color-acento); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; font-family: inherit; }
+.input-number-btn:hover:not(:disabled) { background: var(--color-acento); color: #fff; }
+.input-number-btn:active:not(:disabled) { transform: scale(0.92); }
+.input-number-btn:disabled { opacity: 0.35; cursor: not-allowed; background: var(--bg-principal); color: var(--texto-secundario); }
+.input-number-wrapper { flex: 1; display: flex; align-items: center; background: var(--input-bg); border-left: 1px solid var(--borde); border-right: 1px solid var(--borde); padding: 0 0.85rem; min-width: 0; }
+.input-number-prefix { color: var(--texto-secundario); font-weight: 600; margin-right: 0.35rem; font-size: 1rem; }
+.input-number-wrapper input[type="number"] { flex: 1; border: none; background: transparent; color: var(--texto-principal); font-family: inherit; font-size: 1rem; font-weight: 600; padding: 0.75rem 0; text-align: left; outline: none; min-width: 0; -moz-appearance: textfield; appearance: textfield; }
+.input-number-wrapper input[type="number"]::-webkit-outer-spin-button,
+.input-number-wrapper input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+/* Resumen */
+.resumen-item { display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px solid var(--borde); color: var(--texto-principal); font-size: 0.9rem; }
+.resumen-item:last-of-type { border-bottom: none; }
+.resumen-extras { font-size: 0.78rem; color: var(--texto-secundario); padding: 0.1rem 0 0.4rem 1rem; line-height: 1.4; }
+.resumen-total { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 2px solid var(--borde); font-weight: 700; font-size: 1.1rem; color: var(--color-acento); display: flex; justify-content: space-between; }
+
+/* Botones */
+.btn-confirmar { background: var(--color-acento); color: #fff; border: none; padding: 0.9rem 1.5rem; border-radius: 50px; font-weight: 700; font-size: 1rem; cursor: pointer; width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; transition: 0.2s; font-family: inherit; }
+.btn-confirmar:hover { background: var(--color-acento-hover); transform: scale(0.98); }
+.btn-perfil { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: var(--color-acento); padding: 0.5rem 1rem; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 0.85rem; border: 1px solid var(--color-acento); margin-top: 0.75rem; transition: 0.2s; }
+.btn-perfil:hover { background: var(--color-acento); color: #fff; text-decoration: none; }
+
+@media (max-width: 500px) { 
+    .radio-cards { grid-template-columns: 1fr; } 
+}

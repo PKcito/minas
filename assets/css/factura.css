@@ -1,0 +1,205 @@
+/* ============================================================
+   FACTURA - Estilos standalone para imprimir/guardar PDF
+   ============================================================ */
+
+body.factura-body {
+    background: #f5f5f5;
+    font-family: 'Poppins', sans-serif;
+    padding: 2rem;
+}
+
+.factura-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 16px;
+    padding: 2.5rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+}
+
+.factura-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 3px solid #d32f2f;
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.factura-header h1 {
+    color: #d32f2f;
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: 2px;
+}
+
+.factura-numero {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #555;
+}
+
+.factura-datos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.factura-datos .bloque strong {
+    display: block;
+    color: #333;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.3rem;
+}
+
+.factura-datos .bloque span {
+    display: block;
+    color: #555;
+    margin-top: 0.2rem;
+    font-size: 0.95rem;
+}
+
+.factura-direccion {
+    margin-bottom: 1.5rem;
+    background: #f9f9f9;
+    padding: 0.8rem;
+    border-radius: 8px;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+.factura-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+}
+
+.factura-tabla th {
+    background: #f7f7f7;
+    padding: 0.7rem;
+    text-align: left;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #555;
+    border-bottom: 2px solid #ddd;
+}
+
+.factura-tabla td {
+    padding: 0.7rem;
+    border-bottom: 1px solid #eee;
+    color: #333;
+    font-size: 0.95rem;
+}
+
+.factura-tabla .total-row td {
+    border-top: 2px solid #d32f2f;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #d32f2f;
+    padding-top: 0.8rem;
+}
+
+.badge-estado-factura {
+    display: inline-block;
+    padding: 0.2rem 0.8rem;
+    border-radius: 50px;
+    color: #000;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+.factura-acciones {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.btn-print {
+    background: #d32f2f;
+    color: #fff;
+    border: none;
+    padding: 0.7rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: inherit;
+    font-size: 0.95rem;
+    transition: 0.2s;
+}
+
+.btn-print:hover {
+    background: #b71c1c;
+    transform: scale(0.98);
+}
+
+.btn-volver-factura {
+    display: inline-block;
+    margin-left: 0.5rem;
+    padding: 0.7rem 1.5rem;
+    background: #d32f2f;
+    color: #fff;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.btn-volver-factura:hover {
+    background: #b71c1c;
+}
+
+.factura-footer {
+    margin-top: 2rem;
+    border-top: 1px solid #eee;
+    padding-top: 1rem;
+    text-align: center;
+    color: #888;
+    font-size: 0.85rem;
+}
+
+.factura-footer .marca {
+    color: #d32f2f;
+    font-weight: 700;
+}
+
+@media print {
+    body.factura-body {
+        background: #fff;
+        padding: 0;
+    }
+    .factura-container {
+        box-shadow: none;
+        padding: 1rem;
+    }
+    .btn-print,
+    .btn-volver-factura {
+        display: none;
+    }
+}
+
+@media (max-width: 600px) {
+    .factura-container {
+        padding: 1.2rem;
+    }
+    .factura-header h1 {
+        font-size: 1.4rem;
+    }
+    .factura-numero {
+        font-size: 0.95rem;
+    }
+    .factura-datos {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    .factura-tabla th,
+    .factura-tabla td {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+}

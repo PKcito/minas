@@ -1,0 +1,112 @@
+/* ============================================================
+   ESTILOS DE GESTIÓN DE CLIENTES (ADMIN)
+   ============================================================ */
+
+.d-none { display: none !important; }
+.col-full { grid-column: 1 / -1; }
+
+.clientes-main {
+    padding: 2rem 0;
+}
+
+.filtros-clientes-grid {
+    grid-template-columns: 2fr 1.2fr auto auto !important;
+    align-items: end !important;
+    gap: 1rem !important;
+}
+
+/* Subimos 1.15rem el selector y los botones para que queden al nivel del input Buscar (compensando el 0/100) */
+.filtros-clientes-grid .filtro-item:nth-child(2),
+.filtros-clientes-grid .btn-filtro {
+    margin-bottom: 1.15rem !important;
+}
+
+.filtros-clientes-grid .btn-filtro {
+    height: 38px;
+    padding: 0 1.4rem;
+    justify-content: center;
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .filtros-clientes-grid {
+        grid-template-columns: 1fr !important;
+    }
+    .filtros-clientes-grid .filtro-item:nth-child(2),
+    .filtros-clientes-grid .btn-filtro {
+        margin-bottom: 0 !important;
+    }
+}
+
+.icono-sin-clientes {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    opacity: 0.5;
+}
+
+.nota-cliente-badge {
+    color: var(--texto-secundario);
+    font-size: 0.75rem;
+    font-style: italic;
+}
+
+.modal-box-lg {
+    max-width: 650px;
+}
+
+.modal-subtitulo {
+    color: var(--texto-secundario);
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+}
+
+.lista-pedidos-modal {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    max-height: 320px;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+}
+
+.pedido-item-modal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: var(--bg-principal);
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    font-size: 0.85rem;
+}
+
+.pedido-item-modal a {
+    color: var(--color-acento);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.input-inline-flex {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.select-prefijo-cli {
+    width: 105px !important;
+    flex-shrink: 0;
+}
+
+.input-flex-1 {
+    flex: 1;
+}
+
+.modal-acciones {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1.25rem;
+}
+
+.btn-cancelar-modal {
+    padding: 0.5rem 1.2rem;
+}

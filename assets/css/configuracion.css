@@ -1,0 +1,96 @@
+/* ============================================================
+   ESTILOS DE CONFIGURACIÓN DEL SISTEMA (ADMIN)
+   ============================================================ */
+
+.d-none { display: none !important; }
+
+.config-main {
+    padding: 2rem 0;
+    display: flex;
+    justify-content: center;
+}
+
+.config-card {
+    width: 100%;
+    max-width: 650px;
+}
+
+.config-titulo {
+    margin-bottom: 1.5rem;
+    color: var(--texto-principal);
+    text-align: center;
+}
+
+.tasa-box {
+    background: var(--color-acento-claro);
+    padding: 1.2rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+}
+
+.tasa-label {
+    color: var(--color-acento) !important;
+    font-weight: 800 !important;
+    font-size: 1.1rem;
+    margin-bottom: 0.8rem !important;
+    display: block;
+    text-align: center;
+}
+
+.tasa-group {
+    max-width: 100%;
+    border-color: var(--color-acento);
+}
+
+.tasa-btn {
+    background: var(--color-acento-claro);
+    color: var(--color-acento);
+}
+
+.tasa-wrapper {
+    background: var(--input-bg, #fff);
+}
+
+.tasa-prefix {
+    color: var(--color-acento);
+    font-size: 1.2rem;
+}
+
+.tasa-input {
+    font-size: 1.5rem !important;
+    font-weight: 800 !important;
+    color: var(--color-acento) !important;
+    text-align: center !important;
+}
+
+.tasa-hint {
+    color: var(--texto-secundario);
+    display: block;
+    margin-top: 0.5rem;
+    text-align: center;
+}
+
+.input-inline-flex {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.select-prefijo-tel {
+    width: 110px !important;
+    flex-shrink: 0;
+}
+
+.select-tipo-cedula {
+    width: 110px !important;
+    flex-shrink: 0;
+}
+
+.input-flex-1 {
+    flex: 1;
+}
+
+.btn-guardar-config {
+    margin-top: 1.5rem;
+    width: 100%;
+    padding: 1rem;
+}

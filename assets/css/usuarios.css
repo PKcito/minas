@@ -1,0 +1,140 @@
+/* ============================================================
+   ESTILOS DE GESTIÓN DE ADMINISTRADORES (USUARIOS)
+   ============================================================ */
+
+.d-none { display: none !important; }
+.d-inline { display: inline; }
+.card-mb { margin-bottom: 2rem; }
+.mt-1 { margin-top: 1rem; }
+
+.usuarios-main {
+    padding: 2rem 0;
+}
+
+.usuarios-descripcion {
+    color: var(--texto-secundario);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+
+.tabla-titulo {
+    margin-bottom: 1rem;
+    color: var(--texto-principal);
+}
+
+/* ============================================================
+   CONTENEDOR DE CONTRASEÑA CON BOTÓN DE OJITO (DISEÑO FIJO)
+   ============================================================ */
+.password-wrapper {
+    position: relative !important;
+    display: block !important;
+    width: 100% !important;
+}
+
+.password-wrapper input {
+    width: 100% !important;
+    padding-right: 3rem !important;
+    margin-bottom: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.password-wrapper .btn-toggle-pass {
+    position: absolute !important;
+    top: 50% !important;
+    right: 0.5rem !important;
+    transform: translateY(-50%) !important;
+    width: 34px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 50% !important;
+    background: transparent !important;
+    border: none !important;
+    color: var(--texto-secundario) !important;
+    font-size: 0.95rem !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 5 !important;
+    transition: background-color 0.2s, color 0.2s !important;
+    box-shadow: none !important;
+}
+
+.password-wrapper .btn-toggle-pass:hover {
+    background: var(--color-acento-claro) !important;
+    color: var(--color-acento) !important;
+}
+
+.password-wrapper .btn-toggle-pass:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 2px var(--color-acento-claro) !important;
+}
+
+.permisos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.5rem;
+}
+
+.modal-permisos-grid {
+    margin: 1rem 0;
+}
+
+.badge-super-admin {
+    background: #d32f2f;
+    color: #fff;
+    font-size: 0.65rem;
+}
+
+.texto-acceso-total {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.78rem;
+    color: var(--color-acento);
+    background: var(--color-acento-claro, rgba(211, 47, 47, 0.12));
+    padding: 0.25rem 0.75rem;
+    border-radius: 50px;
+    font-weight: 700;
+}
+
+.texto-protegido {
+    font-size: 0.75rem;
+    color: var(--texto-secundario);
+    font-style: italic;
+}
+
+/* Botón Gestionar permisos tipo píldora moderna acorde a la tabla */
+.btn-gestionar-permisos {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.4rem !important;
+    padding: 0.38rem 0.95rem !important;
+    font-size: 0.78rem !important;
+    font-weight: 600 !important;
+    font-family: inherit !important;
+    border-radius: 50px !important;
+    background: rgba(211, 47, 47, 0.14) !important;
+    color: #ff5252 !important;
+    border: 1px solid rgba(211, 47, 47, 0.35) !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    box-shadow: none !important;
+}
+
+.btn-gestionar-permisos:hover {
+    background: var(--color-acento, #d32f2f) !important;
+    color: #fff !important;
+    border-color: var(--color-acento, #d32f2f) !important;
+    transform: translateY(-1px);
+}
+
+.modal-acciones {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+}

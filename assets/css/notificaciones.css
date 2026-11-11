@@ -1,0 +1,126 @@
+/* ============================================================
+   ESTILOS DE HISTORIAL DE NOTIFICACIONES
+   ============================================================ */
+
+.container-notif {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.volver-notif-wrapper {
+    margin-bottom: 1rem;
+}
+
+.btn-volver {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 1.1rem;
+    background: var(--color-acento, #d32f2f);
+    color: #fff;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: 0.2s;
+}
+
+.btn-volver:hover {
+    background: var(--color-acento-hover, #b71c1c);
+    color: #fff;
+    transform: scale(0.98);
+}
+
+.card-notif {
+    background: var(--bg-secundario, #1e1e1e);
+    border-radius: 16px;
+    padding: 1.75rem;
+    box-shadow: 0 4px 12px var(--sombra, rgba(0, 0, 0, 0.25));
+    border: 1px solid var(--borde, #333);
+}
+
+.notif-header-titulo {
+    color: var(--texto-principal, #fff);
+    margin: 0 0 1.25rem 0;
+    font-size: 1.35rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--borde, #333);
+}
+
+.notif-header-titulo i {
+    color: var(--color-acento, #d32f2f);
+}
+
+.notif-item {
+    padding: 0.9rem 0.5rem;
+    border-bottom: 1px solid var(--borde, #333);
+    transition: background 0.2s;
+}
+
+.notif-item:last-child {
+    border-bottom: none;
+}
+
+.notif-item-nueva {
+    background: var(--color-acento-claro, rgba(211, 47, 47, 0.08));
+    border-radius: 10px;
+    padding: 0.9rem;
+    margin-bottom: 0.4rem;
+}
+
+.notif-item .titulo {
+    font-weight: 700;
+    color: var(--texto-principal, #fff);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.notif-item .mensaje {
+    color: var(--texto-secundario, #aaa);
+    font-size: 0.9rem;
+    margin: 0.25rem 0 0.4rem 0;
+    line-height: 1.4;
+}
+
+.notif-item .fecha {
+    color: var(--texto-secundario, #aaa);
+    font-size: 0.75rem;
+}
+
+.badge-leida {
+    background: #28a745;
+    color: #fff;
+    padding: 0.15rem 0.6rem;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.badge-no-leida {
+    background: #d32f2f;
+    color: #fff;
+    padding: 0.15rem 0.6rem;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.notif-vacio {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: var(--texto-secundario, #aaa);
+}
+
+.notif-vacio i {
+    font-size: 2.5rem;
+    opacity: 0.4;
+    margin-bottom: 0.6rem;
+    display: block;
+}

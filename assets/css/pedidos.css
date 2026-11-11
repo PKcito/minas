@@ -1,0 +1,424 @@
+/* ============================================================
+   ESTILOS ESPECÍFICOS DE PEDIDOS (ADMIN)
+   ============================================================ */
+
+/* Layout principal de la página */
+.main-pedidos {
+    padding: 2rem 0;
+}
+
+.tabla-vacia {
+    text-align: center;
+    padding: 2rem;
+    color: var(--texto-secundario);
+}
+
+/* Alineación vertical y espaciado limpio en la tabla de pedidos */
+.tabla-admin th,
+.tabla-admin td {
+    vertical-align: middle !important;
+    padding: 0.75rem 0.65rem !important;
+}
+
+.celda-centrada {
+    text-align: center !important;
+}
+
+.celda-fecha {
+    white-space: nowrap;
+    font-size: 0.85rem;
+}
+
+.celda-entrega {
+    white-space: nowrap;
+}
+
+.entrega-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.entrega-badge i {
+    color: var(--color-acento);
+}
+
+.sin-comp {
+    color: var(--texto-secundario);
+    opacity: 0.5;
+}
+
+/* Nombre del cliente + Píldora de WhatsApp debajo */
+.cliente-nombre-txt {
+    font-weight: 700;
+    color: var(--texto-principal);
+    font-size: 0.9rem;
+    line-height: 1.2;
+    margin-bottom: 0.25rem;
+}
+
+.chip-whatsapp-cliente {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: rgba(37, 211, 102, 0.12);
+    color: #25D366;
+    border: 1px solid rgba(37, 211, 102, 0.3);
+    padding: 0.15rem 0.55rem;
+    border-radius: 50px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.chip-whatsapp-cliente:hover {
+    background: #25D366;
+    color: #fff;
+    border-color: #25D366;
+    transform: translateY(-1px);
+}
+
+/* Contenedor de botones de acción alineado en una sola fila */
+.acciones-container {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 0.35rem !important;
+    flex-wrap: nowrap !important;
+}
+
+.acciones-container .btn,
+.acciones-container a.btn,
+.acciones-container button.btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.35rem !important;
+    height: 32px !important;
+    min-height: 32px !important;
+    padding: 0 0.75rem !important;
+    border-radius: 8px !important;
+    font-size: 0.78rem !important;
+    font-weight: 600 !important;
+    line-height: 1 !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+}
+
+/* Botones cuadrados para acciones de solo ícono */
+.btn-icon-only,
+.acciones-container .btn-icon-only {
+    width: 32px !important;
+    min-width: 32px !important;
+    height: 32px !important;
+    padding: 0 !important;
+    font-size: 0.85rem !important;
+    border-radius: 8px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Botones con colores específicos */
+.btn-export-csv {
+    background: #28a745 !important;
+    color: #fff !important;
+}
+.btn-export-csv:hover {
+    background: #218838 !important;
+}
+
+.btn-cobrar {
+    background: #28a745 !important;
+    color: #fff !important;
+    font-weight: 700 !important;
+}
+.btn-cobrar:hover {
+    background: #218838 !important;
+    color: #fff !important;
+}
+
+/* Colores de texto */
+.text-cancelados { color: #dc3545 !important; }
+.metodo-pago-text {
+    color: var(--texto-secundario);
+    font-size: 0.72rem;
+    margin-top: 0.2rem;
+}
+.estado-final-text {
+    font-size: 0.75rem;
+    color: var(--texto-secundario);
+    font-style: italic;
+    margin-right: 0.3rem;
+    white-space: nowrap;
+}
+
+/* Temporizador */
+.timer-container {
+    color: #dc3545;
+    font-weight: 700;
+    font-size: 0.72rem;
+    display: inline-block;
+    margin-top: 0.25rem;
+}
+
+/* Acciones expiradas */
+.accion-expirada {
+    font-size: 0.75rem;
+    color: #dc3545;
+    font-weight: 700;
+    margin-right: 0.3rem;
+    white-space: nowrap;
+}
+
+/* Formularios en línea */
+.form-inline {
+    display: inline-flex !important;
+    margin: 0 !important;
+}
+
+/* Modal de Historial */
+.historial-modal-contenido {
+    margin-top: 1rem;
+}
+.hist-item {
+    padding: 0.75rem;
+    border-left: 4px solid;
+    background: var(--bg-principal);
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+}
+.hist-fecha {
+    font-size: 0.75rem;
+    color: var(--texto-secundario);
+    margin-bottom: 0.3rem;
+}
+.hist-usuario {
+    font-size: 0.9rem;
+    color: var(--texto-principal);
+}
+.hist-estados {
+    font-size: 0.85rem;
+    color: var(--texto-secundario);
+    margin-top: 0.4rem;
+}
+.hist-badge {
+    background: var(--borde);
+    color: #000;
+    padding: 0.15rem 0.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+}
+
+/* ============================================================
+   BARRA DE RESUMEN (rediseño para integrarse con las cards)
+   ============================================================ */
+.resumen-barra {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+.resumen-barra .resumen-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.85rem;
+    background: var(--bg-secundario) !important;
+    border: 1px solid var(--borde) !important;
+    border-radius: 12px !important;
+    padding: 1rem 1.15rem !important;
+    box-shadow: 0 2px 8px var(--sombra) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin: 0 !important;
+}
+
+.resumen-barra .resumen-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px var(--sombra) !important;
+}
+
+.resumen-icono {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+    flex-shrink: 0;
+}
+
+.resumen-pedidos .resumen-icono { background: rgba(0, 123, 255, 0.12); color: #007bff; }
+.resumen-facturado .resumen-icono { background: rgba(40, 167, 69, 0.12); color: #28a745; }
+.resumen-cancelados .resumen-icono { background: rgba(220, 53, 69, 0.12); color: #dc3545; }
+
+.resumen-texto {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+    min-width: 0;
+}
+
+.resumen-label {
+    font-size: 0.72rem;
+    color: var(--texto-secundario);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+    margin-bottom: 0.15rem;
+}
+
+.resumen-valor {
+    font-size: 1.25rem;
+    color: var(--texto-principal);
+    font-weight: 800;
+}
+
+.resumen-cancelados .resumen-valor { color: #dc3545; }
+
+/*MODAL DE COMPROBANTE - Diseño de tarjeta centrada*/
+
+.modal-comprobante {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 1rem;
+    backdrop-filter: blur(4px);
+}
+
+.comprobante-modal-box {
+    background: var(--bg-secundario);
+    border: 1px solid var(--borde);
+    border-radius: 16px;
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 800px;
+    max-height: 90vh; 
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    position: relative;
+    animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.comprobante-modal-box .cerrar {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    font-size: 1.8rem;
+    line-height: 1;
+    color: var(--texto-secundario);
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.comprobante-modal-box .cerrar:hover {
+    color: #dc3545;
+}
+
+.comprobante-modal-box .titulo {
+    color: var(--texto-principal);
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    padding-right: 2rem;
+}
+
+#contenidoComprobante {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+    border-radius: 8px;
+}
+
+#contenidoComprobante img {
+    display: block;
+    max-width: 100%;
+    max-height: 65vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 8px;
+    background: #fff; 
+    padding: 4px;
+}
+
+#contenidoComprobante iframe {
+    width: 100%;
+    height: 65vh;
+    border: none;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.comprobante-full-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 1rem;
+    padding: 0.6rem 1.5rem;
+    background: var(--color-acento);
+    color: #fff !important;
+    border-radius: 50px;
+    text-decoration: none !important;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: 0.2s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.comprobante-full-link:hover {
+    background: var(--color-acento-hover);
+    transform: scale(0.97);
+}
+
+/* ============================================================
+   ESTRUCTURA DE LA TABLA (Márgenes y scroll)
+   ============================================================ */
+.tabla-card {
+    background: var(--bg-secundario);
+    border: 1px solid var(--borde);
+    border-radius: 16px;
+    padding: 1.25rem; /* 🔥 Esto le da el margen interno que faltaba */
+    box-shadow: 0 4px 12px var(--sombra);
+    margin-bottom: 2rem;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden; /* Mantiene los bordes redondeados limpios */
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto; /* Permite hacer scroll horizontal si la pantalla es muy pequeña */
+    -webkit-overflow-scrolling: touch;
+    border-radius: 8px;
+}
+
+.tabla-admin {
+    width: 100%;
+    min-width: 950px; /* 🔥 Evita que las columnas se aplasten y corten los botones */
+    border-collapse: collapse;
+}
