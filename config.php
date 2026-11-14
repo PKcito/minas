@@ -24,7 +24,7 @@ function leer_env_db($claves, $defecto = '') {
 
 $host   = leer_env_db(['MYSQLHOST', 'RAILWAY_PRIVATE_DOMAIN', 'DB_HOST'], 'localhost');
 $port   = leer_env_db(['MYSQLPORT', 'DB_PORT'], '3306');
-$dbname = leer_env_db(['MYSQLDATABASE', 'MYSQL_DATABASE', 'DB_DATABASE', 'DB_NAME'], 'minas_burguer');
+$dbname = leer_env_db(['MYSQLDATABASE', 'MYSQL_DATABASE', 'DB_DATABASE', 'DB_NAME'], 'railway');
 $user   = leer_env_db(['MYSQLUSER', 'DB_USERNAME', 'DB_USER'], 'root');
 $pass   = leer_env_db(['MYSQLPASSWORD', 'MYSQL_ROOT_PASSWORD', 'DB_PASSWORD', 'DB_PASS'], '');
 
