@@ -62,8 +62,81 @@ while ($intentos > 0) {
     }
 }
 
-function url($path = '') { return BASE_URL . ltrim($path, '/'); }
-function redirect($path) { header('Location: ' . url($path)); exit; }
-function asset($path) { return BASE_URL . 'assets/' . ltrim($path, '/'); }
-function partial($nombre, $vars = []) { extract($vars); include __DIR__ . '/includes/' . $nombre . '.php'; }
-function escaparHtml($texto) { return htmlspecialchars((string)$texto, ENT_QUOTES, 'UTF-8'); }
+// Funciones auxiliares esenciales
+function url($path = '') {
+    return BASE_URL . ltrim($path, '/');
+}
+
+function redirect($path) {
+    header('Location: ' . url($path));
+    exit;
+}
+
+function asset($path) {
+    return BASE_URL . 'assets/' . ltrim($path, '/');
+}
+
+function partial($nombre, $vars = []) {
+    extract($vars);
+    include __DIR__ . '/includes/' . $nombre . '.php';
+}
+
+function usuarioLogueado() {
+    return isset($_SESSION['usuario_id']);
+}
+
+function esAdmin() {
+    return isset($_SESSION['rol_id']) && $_SESSION['rol_id'] == 1;
+}
+
+function esSuperAdmin() {
+    return isset($_SESSION['es_super_admin']) && $_SESSION['es_super_admin'] == 1;
+}
+
+function tienePermiso($modulo) {
+    if (!esAdmin()) return false;
+    if (esSuperAdmin()) return true;
+    $permisos = $_SESSION['permisos'] ?? [];
+    if (is_string($permisos)) {
+        $permisos = json_decode($permisos, true) ?: [];
+    }
+    return in_array('all', $permisos) || in_array($modulo, $permisos);
+}
+
+function requierePermiso($modulo) {
+    if (!tienePermiso($modulo)) {
+        $_SESSION['flash_error'] = "No tienes permiso para acceder a este módulo.";
+        redirect('admin/dashboard.php');
+    }
+}
+
+function obtenerNombreUsuario() {
+    if (isset($_SESSION['nombres']) && isset($_SESSION['apellidos'])) {
+        return trim($_SESSION['nombres'] . ' ' . $_SESSION['apellidos']);
+    }
+    return $_SESSION['nombres'] ?? 'Usuario';
+}
+
+function obtenerCarrito() {
+    return $_SESSION['carrito'] ?? [];
+}
+
+function vaciarCarrito() {
+    unset($_SESSION['carrito']);
+}
+
+function escaparHtml($texto) {
+    return htmlspecialchars((string)$texto, ENT_QUOTES, 'UTF-8');
+}
+
+function crearNotificacion($pdo, $usuario_id, $pedido_id, $titulo, $mensaje) {
+    $stmt = $pdo->prepare("INSERT INTO notificaciones (usuario_id, pedido_id, titulo, mensaje) VALUES (?, ?, ?, ?)");
+    $stmt->execute([$usuario_id, $pedido_id, $titulo, $mensaje]);
+}
+
+function tiempoRestanteCancelacion($fecha_pedido, $minutos_limite = 20) {
+    $fecha_creacion = strtotime($fecha_pedido);
+    $fecha_limite = $fecha_creacion + ($minutos_limite * 60);
+    $ahora = time();
+    return max(0, $fecha_limite - $ahora);
+}
