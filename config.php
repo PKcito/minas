@@ -76,14 +76,24 @@ if (isset($_SESSION['usuario_id'])) {
     $_SESSION['ultima_actividad'] = time();
 }
 
-try {
-    $pdo = new PDO("mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4", $user, $pass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-    $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-    $pdo->exec("SET time_zone = '-04:00'");
-} catch (PDOException $e) {
-    die("Error de conexion: " . $e->getMessage());
+// Bloque de conexión con reintentos inteligentes para Railway
+$intentos = 5;
+$pdo = null;
+while ($intentos > 0) {
+    try {
+        $pdo = new PDO("mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4", $user, $pass);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+        $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+        $pdo->exec("SET time_zone = '-04:00'");
+        break;
+    } catch (PDOException $e) {
+        $intentos--;
+        if ($intentos === 0) {
+            die("Error de conexion tras varios intentos: " . $e->getMessage());
+        }
+        sleep(2); // Espera 2 segundos antes de reintentar conectar
+    }
 }
 
 function url($path = '') {
