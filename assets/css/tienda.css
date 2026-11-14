@@ -1,0 +1,28 @@
+/* ============================================================
+   BANNER PROMOCIONAL (HERO) EN TIENDA PRINCIPAL
+   ============================================================ */
+.hero {
+    position: relative;
+    background:
+        linear-gradient(115deg, rgba(15, 15, 15, 0.92) 0%, rgba(25, 25, 25, 0.82) 55%, rgba(183, 28, 28, 0.78) 100%),
+        url('../img/banner.jpg') center/cover no-repeat;
+    border-bottom: 1px solid var(--borde);
+    padding: 3.2rem 1.5rem !important;
+    overflow: hidden;
+}
+
+.hero-badge-promo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(255, 193, 7, 0.15);
+    color: #ffc107;
+    border: 1px solid rgba(255, 193, 7, 0.35);
+    padding: 0.3rem 0.9rem;
+    border-radius: 50px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.85rem;
+}

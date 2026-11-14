@@ -1,165 +1,168 @@
 <?php
 require_once __DIR__ . '/../config.php';
-require_once __DIR__ . '/../includes/validaciones.php';
-require_once __DIR__ . '/../includes/seguridad.php';
 
-if (!esAdmin()) { redirect('index.php'); }
-if (!tienePermiso('pedidos') && !tienePermiso('reportes')) {
-    requierePermiso('pedidos');
+if (!esAdmin()) {
+    redirect('index.php');
+}
+if (!tienePermiso('reportes') && !tienePermiso('pedidos')) {
+    redirect('admin/dashboard.php');
 }
 
-// ============================================================
-// FILTROS VALIDADOS
-// ============================================================
-$filtro_fecha_desde = v_fecha($_GET['fecha_desde'] ?? '', true);
-$filtro_fecha_hasta = v_fecha($_GET['fecha_hasta'] ?? '', true);
-$filtro_estado = v_int($_GET['estado'] ?? 0, 0);
-$filtro_entrega = $_GET['entrega'] ?? '';
-$filtro_metodo_pago = v_int($_GET['metodo_pago'] ?? 0, 0);
-$filtro_estado_pago = v_int($_GET['estado_pago'] ?? 0, 0);
-$filtro_cliente_id = v_int($_GET['cliente_id'] ?? 0, 0);
+$nombre_negocio_csv = 'MINAS BURGUER';
+try {
+    $cfg_csv = $pdo->query("SELECT nombre_negocio FROM configuracion_pago WHERE id = 1 LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+    if (!empty(trim($cfg_csv['nombre_negocio'] ?? ''))) {
+        $nombre_negocio_csv = trim($cfg_csv['nombre_negocio']);
+    }
+} catch (Exception $e) {}
 
-$where = []; $params = [];
-if ($filtro_fecha_desde) { $where[] = "DATE(p.fecha_pedido) >= ?"; $params[] = $filtro_fecha_desde; }
-if ($filtro_fecha_hasta) { $where[] = "DATE(p.fecha_pedido) <= ?"; $params[] = $filtro_fecha_hasta; }
-if ($filtro_estado > 0) { $where[] = "p.estado_id = ?"; $params[] = $filtro_estado; }
-if ($filtro_entrega === 'delivery' || $filtro_entrega === 'recoger') { $where[] = "p.tipo_entrega = ?"; $params[] = $filtro_entrega; }
-if ($filtro_metodo_pago > 0) { $where[] = "p.metodo_pago_id = ?"; $params[] = $filtro_metodo_pago; }
-if ($filtro_estado_pago > 0) { $where[] = "p.estado_pago_id = ?"; $params[] = $filtro_estado_pago; }
-if ($filtro_cliente_id > 0) { $where[] = "c.id = ?"; $params[] = $filtro_cliente_id; }
+$input = array_merge($_GET, $_POST);
 
-$where_sql = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
+$fecha_desde = $input['fecha_desde'] ?? date('Y-m-d', strtotime('-30 days'));
+$fecha_hasta = $input['fecha_hasta'] ?? date('Y-m-d');
+$filtro_estado = intval($input['estado'] ?? 0);
+$filtro_entrega = trim($input['entrega'] ?? '');
+$filtro_metodo_pago = intval($input['metodo_pago'] ?? 0);
+$filtro_estado_pago = intval($input['estado_pago'] ?? 0);
+$filtro_producto = intval($input['producto'] ?? 0);
+$filtro_cliente = intval($input['cliente'] ?? 0);
+
+if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha_desde)) {
+    $fecha_desde = date('Y-m-d', strtotime('-30 days'));
+}
+if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha_hasta)) {
+    $fecha_hasta = date('Y-m-d');
+}
+if ($fecha_desde > $fecha_hasta) {
+    $tmp = $fecha_desde;
+    $fecha_desde = $fecha_hasta;
+    $fecha_hasta = $tmp;
+}
+
+$where = ["DATE(p.fecha_pedido) BETWEEN ? AND ?"];
+$params = [$fecha_desde, $fecha_hasta];
+
+if ($filtro_estado > 0) {
+    $where[] = "p.estado_id = ?";
+    $params[] = $filtro_estado;
+}
+if ($filtro_entrega === 'delivery' || $filtro_entrega === 'recoger') {
+    $where[] = "p.tipo_entrega = ?";
+    $params[] = $filtro_entrega;
+}
+if ($filtro_metodo_pago > 0) {
+    $where[] = "p.metodo_pago_id = ?";
+    $params[] = $filtro_metodo_pago;
+}
+if ($filtro_estado_pago > 0) {
+    $where[] = "p.estado_pago_id = ?";
+    $params[] = $filtro_estado_pago;
+}
+if ($filtro_producto > 0) {
+    $where[] = "EXISTS (SELECT 1 FROM detalle_pedido dp_f WHERE dp_f.pedido_id = p.id AND dp_f.producto_id = ?)";
+    $params[] = $filtro_producto;
+}
+if ($filtro_cliente > 0) {
+    $where[] = "p.usuario_id = ?";
+    $params[] = $filtro_cliente;
+}
+
+$where_sql = 'WHERE ' . implode(' AND ', $where);
+
+if ($filtro_producto > 0) {
+    $id_prod_seguro = intval($filtro_producto);
+    $sql_monto_pedido = "(
+        SELECT COALESCE(SUM(
+            dp_sub.cantidad * (
+                dp_sub.precio_unitario_historico +
+                COALESCE((SELECT SUM(dpe_sub.precio_extra) FROM detalle_pedido_extras dpe_sub WHERE dpe_sub.detalle_pedido_id = dp_sub.id), 0)
+            )
+        ), 0)
+        FROM detalle_pedido dp_sub
+        WHERE dp_sub.pedido_id = p.id AND dp_sub.producto_id = {$id_prod_seguro}
+    )";
+} else {
+    $sql_monto_pedido = "p.total_pedido";
+}
 
 $stmt = $pdo->prepare("
-    SELECT p.id, p.fecha_pedido, p.total_pedido, p.estado_id,
-           c.nombres, c.apellidos, c.telefono,
-           u.email,
-           p.tipo_entrega, p.direccion_texto,
-           mp.nombre AS metodo_pago,
-           ep.nombre AS estado_pago,
-           p.monto_pagado,
-           e.nombre AS estado_pedido
+    SELECT p.id, p.fecha_pedido, p.tipo_entrega, p.total_pedido,
+           ($sql_monto_pedido) AS monto_computado,
+           COALESCE(c.nombres, 'Cliente') AS nombres,
+           COALESCE(c.apellidos, CONCAT('#', p.usuario_id)) AS apellidos,
+           COALESCE(c.telefono, '-') AS telefono,
+           e.id AS estado_id, e.nombre AS estado_nombre,
+           mp.nombre AS metodo_pago_nombre,
+           COALESCE(ep.nombre, 'Pendiente') AS estado_pago_nombre
     FROM pedidos p
-    JOIN usuarios u ON p.usuario_id = u.id
-    JOIN clientes c ON u.id = c.usuario_id
+    LEFT JOIN clientes c ON p.usuario_id = c.usuario_id
     JOIN estados_pedido e ON p.estado_id = e.id
     JOIN metodos_pago mp ON p.metodo_pago_id = mp.id
-    JOIN estados_pago ep ON p.estado_pago_id = ep.id
+    LEFT JOIN estados_pago ep ON p.estado_pago_id = ep.id
     $where_sql
-    ORDER BY p.fecha_pedido DESC
+    ORDER BY p.fecha_pedido DESC, p.id DESC
 ");
 $stmt->execute($params);
-$pedidos = $stmt->fetchAll();
+$pedidos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Extras por pedido
-$extras_por_pedido = [];
-if (!empty($pedidos)) {
-    $ids = array_column($pedidos, 'id');
-    $ph = implode(',', array_fill(0, count($ids), '?'));
-    $stmtExt = $pdo->prepare("
-        SELECT dp.pedido_id, GROUP_CONCAT(CONCAT(dpe.nombre, ' (+$', dpe.precio_extra, ')') SEPARATOR ', ') AS extras
-        FROM detalle_pedido dp
-        JOIN detalle_pedido_extras dpe ON dpe.detalle_pedido_id = dp.id
-        WHERE dp.pedido_id IN ($ph)
-        GROUP BY dp.pedido_id
-    ");
-    $stmtExt->execute($ids);
-    foreach ($stmtExt->fetchAll() as $row) {
-        $extras_por_pedido[$row['pedido_id']] = $row['extras'];
-    }
-}
+$filename = 'reporte_pedidos_' . $fecha_desde . '_al_' . $fecha_hasta . '.csv';
 
-$nombre_archivo = 'Pedidos_MinasBurguer_' . date('Y-m-d_H-i') . '.csv';
-
-// Headers de descarga
-header('Content-Type: text/csv; charset=utf-8');
-header('Content-Disposition: attachment; filename="' . $nombre_archivo . '"');
+header('Content-Type: text/csv; charset=UTF-8');
+header('Content-Disposition: attachment; filename="' . $filename . '"');
 header('Pragma: no-cache');
 header('Expires: 0');
-header('X-Content-Type-Options: nosniff');
 
-$output = fopen('php://output', 'w');
+$out = fopen('php://output', 'w');
+// BOM UTF-8 para que Excel abra acentos y ñ correctamente
+fprintf($out, chr(0xEF) . chr(0xBB) . chr(0xBF));
 
-// BOM UTF-8
-fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
+fputcsv($out, [$nombre_negocio_csv . ' - REPORTE DE PEDIDOS'], ';');
+fputcsv($out, ['Periodo:', $fecha_desde . ' al ' . $fecha_hasta, 'Generado:', date('d/m/Y H:i')], ';');
+fputcsv($out, [], ';');
 
-$sep = ';';
+fputcsv($out, [
+    'ID Pedido',
+    'Fecha y Hora',
+    'Cliente',
+    'Telefono',
+    'Tipo Entrega',
+    'Metodo de Pago',
+    'Estado Pago',
+    'Estado Pedido',
+    $filtro_producto > 0 ? 'Subtotal Producto Filtrado ($)' : 'Total Pedido ($)',
+    'Computa en Ingresos'
+], ';');
 
-// ============================================================
-// ENCABEZADO (con sanitizacion)
-// ============================================================
-fputcsv($output, sanitizar_fila_csv(['MINAS BURGUER - Reporte de Pedidos']), $sep);
-fputcsv($output, sanitizar_fila_csv(['Generado: ' . date('d/m/Y H:i')]), $sep);
+$suma_valida = 0.0;
+$pedidos_validos = 0;
 
-$filtros_txt = [];
-if ($filtro_fecha_desde) $filtros_txt[] = 'Desde: ' . date('d/m/Y', strtotime($filtro_fecha_desde));
-if ($filtro_fecha_hasta) $filtros_txt[] = 'Hasta: ' . date('d/m/Y', strtotime($filtro_fecha_hasta));
-if ($filtro_estado > 0) { $s=$pdo->prepare("SELECT nombre FROM estados_pedido WHERE id=?"); $s->execute([$filtro_estado]); $filtros_txt[] = 'Estado: ' . ucfirst($s->fetchColumn()); }
-if ($filtro_entrega) $filtros_txt[] = 'Entrega: ' . ucfirst($filtro_entrega);
-if ($filtro_metodo_pago > 0) { $s=$pdo->prepare("SELECT nombre FROM metodos_pago WHERE id=?"); $s->execute([$filtro_metodo_pago]); $filtros_txt[] = 'Metodo: ' . $s->fetchColumn(); }
-if ($filtro_estado_pago > 0) { $s=$pdo->prepare("SELECT nombre FROM estados_pago WHERE id=?"); $s->execute([$filtro_estado_pago]); $filtros_txt[] = 'Estado pago: ' . ucfirst($s->fetchColumn()); }
-if ($filtro_cliente_id > 0) { $s=$pdo->prepare("SELECT nombres, apellidos FROM clientes WHERE id=?"); $s->execute([$filtro_cliente_id]); $cl=$s->fetch(); if ($cl) $filtros_txt[] = 'Cliente: ' . $cl['nombres'] . ' ' . $cl['apellidos']; }
-
-fputcsv($output, sanitizar_fila_csv(['Filtros: ' . (empty($filtros_txt) ? 'Ninguno' : implode(' | ', $filtros_txt))]), $sep);
-
-fputcsv($output, [], $sep);
-
-// ============================================================
-// ENCABEZADOS DE LA TABLA
-// ============================================================
-fputcsv($output, [
-    'ID', 'Fecha', 'Cliente', 'Telefono', 'Email',
-    'Tipo entrega', 'Direccion', 'Metodo pago', 'Estado pago',
-    'Monto pagado', 'Estado pedido', 'Extras', 'Total'
-], $sep);
-
-// ============================================================
-// FILAS — sanitizadas una por una
-// ============================================================
 foreach ($pedidos as $p) {
-    $fila = [
-        intval($p['id']),
+    $es_cancelado = intval($p['estado_id']) === 6;
+    $monto = round(floatval($p['monto_computado']), 2);
+
+    if (!$es_cancelado || $filtro_estado === 6) {
+        $suma_valida += $monto;
+        $pedidos_validos++;
+    }
+
+    fputcsv($out, [
+        '#' . $p['id'],
         date('d/m/Y H:i', strtotime($p['fecha_pedido'])),
         trim($p['nombres'] . ' ' . $p['apellidos']),
-        $p['telefono'] ?: '-',
-        $p['email'] ?: '-',
+        $p['telefono'],
         ucfirst($p['tipo_entrega']),
-        $p['direccion_texto'] ?: '-',
-        $p['metodo_pago'],
-        ucfirst($p['estado_pago']),
-        number_format((float)$p['monto_pagado'], 2, ',', ''),
-        ucfirst($p['estado_pedido']),
-        $extras_por_pedido[$p['id']] ?? '-',
-        number_format((float)$p['total_pedido'], 2, ',', '')
-    ];
-    fputcsv($output, sanitizar_fila_csv($fila), $sep);
+        ucfirst($p['metodo_pago_nombre']),
+        ucfirst($p['estado_pago_nombre']),
+        ucfirst($p['estado_nombre']),
+        number_format($monto, 2, '.', ''),
+        $es_cancelado ? 'NO (Cancelado)' : 'SI'
+    ], ';');
 }
 
-// ============================================================
-// RESUMEN (Excluyendo cancelados del cálculo monetario)
-// ============================================================
-$total_general = 0;
-$total_pagado = 0;
-$cantidad = count($pedidos);
-$cancelados = 0;
+fputcsv($out, [], ';');
+fputcsv($out, ['RESUMEN CONTABLE'], ';');
+fputcsv($out, ['Pedidos Validos Computados', $pedidos_validos], ';');
+fputcsv($out, ['Total Facturado Valido ($)', number_format($suma_valida, 2, '.', '')], ';');
 
-foreach ($pedidos as $p) {
-    if (intval($p['estado_id']) === 6) {
-        $cancelados++;
-        continue;
-    }
-    $total_general += floatval($p['total_pedido']);
-    $total_pagado += floatval($p['monto_pagado']);
-}
-
-fputcsv($output, [], $sep);
-
-fputcsv($output, ['', '', '', '', '', '', '', '', '', 'RESUMEN', '', '', ''], $sep);
-fputcsv($output, ['', '', '', '', '', '', '', '', '', 'Cantidad de pedidos', $cantidad, '', ''], $sep);
-fputcsv($output, ['', '', '', '', '', '', '', '', '', 'Pedidos cancelados', $cancelados, '', ''], $sep);
-fputcsv($output, sanitizar_fila_csv(['', '', '', '', '', '', '', '', '', 'Total facturado (sin cancelados)', number_format($total_general, 2, ',', ''), '', '']), $sep);
-fputcsv($output, sanitizar_fila_csv(['', '', '', '', '', '', '', '', '', 'Total cobrado', number_format($total_pagado, 2, ',', ''), '', '']), $sep);
-fputcsv($output, sanitizar_fila_csv(['', '', '', '', '', '', '', '', '', 'Pendiente de cobro', number_format(max(0, $total_general - $total_pagado), 2, ',', ''), '', '']), $sep);
-
-fclose($output);
+fclose($out);
 exit;

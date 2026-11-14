@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $extra_db = $stmt_extra->fetch(PDO::FETCH_ASSOC);
                             if ($extra_db) {
                                 $extras_validados[] = [
-                                    'id'     => (int) $extra_db['id'],
+                                    'id' => (int) $extra_db['id'],
                                     'nombre' => $extra_db['nombre'],
                                     'precio' => (float) $extra_db['precio']
                                 ];
@@ -88,19 +88,84 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Consultas protegidas con bloque try/catch
 $categorias = [];
 $productos = [];
-$tasa_dolar = 1.00;
+$extras = [];
+$tasa_dolar = 1;
+$logo_tienda = '';
+$banner_tienda = '';
+$nombre_negocio_tienda = 'MINAS BURGUER';
+$texto_hero_tienda = 'Sabor que alimenta el alma. Elige tu favorita, personalizala y recibila en la puerta de tu casa.';
 
 try {
-    $categorias = $pdo->query("SELECT * FROM categorias ORDER BY id")->fetchAll(PDO::FETCH_ASSOC);
-    $productos = $pdo->query("SELECT p.*, c.nombre as categoria_nombre FROM productos p LEFT JOIN categorias c ON p.categoria_id = c.id WHERE p.activo = 1 ORDER BY p.id")->fetchAll(PDO::FETCH_ASSOC);
-    
-    // OBTENER LA TASA DEL DÓLAR
-    $tasa_db = $pdo->query("SELECT tasa_dolar FROM configuracion_pago WHERE id = 1")->fetchColumn();
-    if ($tasa_db && $tasa_db > 0) {
-        $tasa_dolar = (float) $tasa_db;
+    // Asegurar que la columna 'activo' exista en categorias también en producción (Railway)
+    $col_cat_activo = $pdo->query("SHOW COLUMNS FROM categorias LIKE 'activo'")->fetch();
+    if (!$col_cat_activo) {
+        $pdo->exec("ALTER TABLE categorias ADD COLUMN activo TINYINT(1) NOT NULL DEFAULT 1 AFTER descripcion");
+    }
+
+    // Cargar solo categorías activas que tengan al menos 1 producto activo
+    $categorias = $pdo->query("
+        SELECT c.* 
+        FROM categorias c 
+        WHERE c.activo = 1 
+          AND EXISTS (SELECT 1 FROM productos p WHERE p.categoria_id = c.id AND p.activo = 1)
+        ORDER BY c.id
+    ")->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    try {
+        $categorias = $pdo->query("
+            SELECT c.* 
+            FROM categorias c 
+            WHERE EXISTS (SELECT 1 FROM productos p WHERE p.categoria_id = c.id AND p.activo = 1)
+            ORDER BY c.id
+        ")->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e2) {
+        error_log("Error cargando categorias en index.php: " . $e2->getMessage());
+    }
+}
+
+try {
+    // Cargar solo productos activos de categorías activas
+    $productos = $pdo->query("
+        SELECT p.*, c.nombre AS categoria_nombre
+        FROM productos p
+        LEFT JOIN categorias c ON p.categoria_id = c.id
+        WHERE p.activo = 1 AND COALESCE(c.activo, 1) = 1
+        ORDER BY p.categoria_id, p.id
+    ")->fetchAll(PDO::FETCH_ASSOC);
+
+    $extras = $pdo->query("SELECT * FROM extras WHERE activo = 1 ORDER BY nombre")->fetchAll(PDO::FETCH_ASSOC);
+
+    // Cargar tasa del dólar, logo, banner y textos desde configuracion_pago
+    $cfg_tienda = $pdo->query("SELECT * FROM configuracion_pago WHERE id = 1 LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+    if ($cfg_tienda) {
+        if (!empty($cfg_tienda['tasa_dolar']) && $cfg_tienda['tasa_dolar'] > 0) {
+            $tasa_dolar = (float) $cfg_tienda['tasa_dolar'];
+        }
+        if (!empty($cfg_tienda['logo']) && file_exists(__DIR__ . '/uploads/config/' . $cfg_tienda['logo'])) {
+            $logo_tienda = url('uploads/config/' . rawurlencode($cfg_tienda['logo']));
+        }
+        if (!empty($cfg_tienda['banner']) && file_exists(__DIR__ . '/uploads/config/' . $cfg_tienda['banner'])) {
+            $banner_tienda = url('uploads/config/' . rawurlencode($cfg_tienda['banner']));
+        }
+        if (!empty(trim($cfg_tienda['nombre_negocio'] ?? ''))) {
+            $nombre_negocio_tienda = trim($cfg_tienda['nombre_negocio']);
+        }
+        if (!empty(trim($cfg_tienda['texto_hero'] ?? ''))) {
+            $texto_hero_tienda = trim($cfg_tienda['texto_hero']);
+        }
     }
 } catch (PDOException $e) {
-    error_log("Error cargando datos del menú en index.php: " . $e->getMessage());
+    error_log("Error cargando catalogo en index.php: " . $e->getMessage());
+}
+
+// Separar el nombre del negocio para resaltar la última palabra en rojo (ej: MINAS <span>BURGUER</span>)
+$palabras_titulo = preg_split('/\s+/', $nombre_negocio_tienda);
+if (count($palabras_titulo) > 1) {
+    $ultima_palabra = array_pop($palabras_titulo);
+    $primera_parte = implode(' ', $palabras_titulo);
+    $titulo_hero_html = htmlspecialchars($primera_parte) . ' <span>' . htmlspecialchars($ultima_palabra) . '</span>';
+} else {
+    $titulo_hero_html = '<span>' . htmlspecialchars($nombre_negocio_tienda) . '</span>';
 }
 
 $isLoggedIn = usuarioLogueado();
@@ -109,6 +174,11 @@ $nombre_header_index = '';
 if ($isLoggedIn && !empty($_SESSION['nombres'])) {
     $partes = explode(' ', trim($_SESSION['nombres']));
     $nombre_header_index = $partes[0];
+}
+
+$estilo_hero = '';
+if (!empty($banner_tienda)) {
+    $estilo_hero = "background: linear-gradient(115deg, rgba(15, 15, 15, 0.88) 0%, rgba(18, 18, 18, 0.72) 100%), url('" . htmlspecialchars($banner_tienda, ENT_QUOTES) . "') center/cover no-repeat;";
 }
 
 partial('head', [
@@ -122,11 +192,14 @@ partial('head', [
 
 <header class="header">
     <div class="container">
-        <span class="header-titulo">
+        <span class="header-titulo" style="display: inline-flex; align-items: center; gap: 0.55rem;">
+            <?php if (!empty($logo_tienda)): ?>
+                <img src="<?= htmlspecialchars($logo_tienda) ?>" alt="Logo" style="width: 30px; height: 30px; object-fit: cover; border-radius: 8px; flex-shrink: 0;">
+            <?php endif; ?>
             <?php if ($isLoggedIn && $nombre_header_index): ?>
                 Hola, <?= htmlspecialchars($nombre_header_index) ?>!
             <?php else: ?>
-                Minas Burguer
+                <?= htmlspecialchars($nombre_negocio_tienda) ?>
             <?php endif; ?>
         </span>
 
@@ -165,14 +238,20 @@ partial('head', [
     </div>
 </header>
 
-<section class="hero">
+<section class="hero" <?php if ($estilo_hero !== ''): ?>style="<?= $estilo_hero ?>"<?php endif; ?>>
     <div class="container">
         <div class="hero-content">
-            <h1>MINAS <span>BURGUER</span></h1>
-            <p>Sabor que alimenta el alma. Elige tu favorita, personalizala y recibila en la puerta de tu casa.</p>
+            <h1 <?php if ($estilo_hero !== ''): ?>style="color: #ffffff; text-shadow: 0 2px 10px rgba(0,0,0,0.6);"<?php endif; ?>><?= $titulo_hero_html ?></h1>
+            <p <?php if ($estilo_hero !== ''): ?>style="color: #f0f0f0; text-shadow: 0 1px 6px rgba(0,0,0,0.6);"<?php endif; ?>><?= htmlspecialchars($texto_hero_tienda) ?></p>
             <button class="btn-order" id="scrollToMenu">Ver menu <i class="fas fa-arrow-right"></i></button>
         </div>
-        <div class="hero-image"><i class="fas fa-hamburger"></i></div>
+        <div class="hero-image">
+            <?php if (!empty($logo_tienda)): ?>
+                <img src="<?= htmlspecialchars($logo_tienda) ?>" alt="<?= htmlspecialchars($nombre_negocio_tienda) ?>" style="width: 155px; height: 155px; object-fit: contain; border-radius: 22px; filter: drop-shadow(0 10px 24px rgba(0,0,0,0.45));">
+            <?php else: ?>
+                <i class="fas fa-hamburger"></i>
+            <?php endif; ?>
+        </div>
     </div>
 </section>
 
@@ -263,8 +342,14 @@ partial('head', [
 
 <div id="welcomeModal">
     <div class="modal-content">
-        <div class="welcome-icon">🍔</div>
-        <h2>Bienvenido a <span>Minas Burguer</span>!</h2>
+        <div class="welcome-icon">
+            <?php if (!empty($logo_tienda)): ?>
+                <img src="<?= htmlspecialchars($logo_tienda) ?>" alt="<?= htmlspecialchars($nombre_negocio_tienda) ?>" style="width: 72px; height: 72px; object-fit: contain; border-radius: 16px;">
+            <?php else: ?>
+                🍔
+            <?php endif; ?>
+        </div>
+        <h2>Bienvenido a <span><?= htmlspecialchars($nombre_negocio_tienda) ?></span>!</h2>
         <p>Arma tu pedido facilmente. <strong>No pagas aqui todavia</strong>, primero armas el carrito y despues coordinamos.</p>
         <div class="highlight">
             Registrate o inicia sesion, agrega productos y finaliza tu pedido.

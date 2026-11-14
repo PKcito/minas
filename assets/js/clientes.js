@@ -9,29 +9,52 @@ document.addEventListener('DOMContentLoaded', function() {
     const URL_VER_DETALLE = config.urlVerDetalle || '';
 
     window.verPedidos = function(cliente, pedidos) {
-        document.getElementById('modal_ped_titulo').innerHTML = '<i class="fas fa-receipt"></i> Últimos pedidos de ' + cliente.nombre;
-        document.getElementById('modal_ped_resumen').textContent = 'Total histórico: ' + cliente.total_pedidos + ' pedido(s) | Total gastado: $' + parseFloat(cliente.total_gastado || 0).toFixed(2);
-        document.getElementById('modal_ped_ver_todos').href = URL_PEDIDOS_ADMIN + cliente.id;
+        document.getElementById('modal_ped_titulo').innerHTML =
+            '<i class="fas fa-receipt"></i> Últimos pedidos de ' + cliente.nombre;
+
+        document.getElementById('modal_ped_resumen').innerHTML =
+            'Total histórico válido: <strong>' + cliente.total_pedidos + ' pedido(s)</strong>  |  Total gastado: <strong>$' +
+            parseFloat(cliente.total_gastado || 0).toFixed(2) + '</strong>';
+
+        document.getElementById('modal_ped_ver_todos').href = URL_PEDIDOS_ADMIN + (cliente.usuario_id || cliente.id);
 
         const contenedor = document.getElementById('modal_ped_lista');
         contenedor.innerHTML = '';
 
         if (!Array.isArray(pedidos) || pedidos.length === 0) {
-            contenedor.innerHTML = '<p style="text-align:center; color: var(--texto-secundario); padding: 1rem;">Este cliente aún no tiene pedidos registrados.</p>';
+            contenedor.innerHTML =
+                '<div style="text-align:center; color: var(--texto-secundario); padding: 1.5rem; background: var(--bg-principal); border: 1px dashed var(--borde); border-radius: 12px;">' +
+                '<i class="fas fa-shopping-bag" style="font-size: 1.5rem; margin-bottom: 0.5rem; opacity: 0.5; display: block;"></i>' +
+                'Este cliente aún no tiene pedidos registrados.' +
+                '</div>';
         } else {
             pedidos.forEach(function(p) {
-                const color = COLORES_ESTADOS[p.estado_id] || '#6c757d';
+                const estadoId = parseInt(p.estado_id, 10) || 0;
+                const color = COLORES_ESTADOS[estadoId] || '#6c757d';
+                const colorTexto = (estadoId === 1) ? '#111111' : '#ffffff';
+                const iconoEntrega = (p.tipo_entrega === 'delivery')
+                    ? '<i class="fas fa-motorcycle"></i> Delivery'
+                    : '<i class="fas fa-store"></i> Recoger';
+
                 const fila = document.createElement('div');
                 fila.className = 'pedido-item-modal';
                 fila.innerHTML =
-                    '<div>' +
-                        '<a href="' + URL_VER_DETALLE + p.id + '">Pedido #' + p.id + '</a> ' +
-                        '<small style="color:var(--texto-secundario);">(' + p.fecha_pedido + ')</small><br>' +
-                        '<small>' + (p.tipo_entrega === 'delivery' ? 'Delivery' : 'Recoger') + ' • ' + p.metodo_pago_nombre + '</small>' +
+                    '<div class="pedido-item-info">' +
+                        '<div class="pedido-item-top">' +
+                            '<a href="' + URL_VER_DETALLE + p.id + '" class="pedido-item-link">Pedido #' + p.id + '</a>' +
+                            '<span class="pedido-item-fecha"><i class="far fa-clock"></i> ' + p.fecha_pedido + '</span>' +
+                        '</div>' +
+                        '<div class="pedido-item-meta">' +
+                            '<span>' + iconoEntrega + '</span>' +
+                            '<span>•</span>' +
+                            '<span><i class="fas fa-wallet"></i> ' + p.metodo_pago_nombre + '</span>' +
+                        '</div>' +
                     '</div>' +
-                    '<div style="text-align:right;">' +
-                        '<strong>$' + parseFloat(p.total_pedido).toFixed(2) + '</strong><br>' +
-                        '<span class="badge-estado" style="background:' + color + '; color:#000; font-size:0.7rem; padding:0.15rem 0.5rem; border-radius:50px;">' + p.estado_nombre + '</span>' +
+                    '<div class="pedido-item-derecha">' +
+                        '<span class="pedido-item-monto">$' + parseFloat(p.total_pedido).toFixed(2) + '</span>' +
+                        '<span class="badge-estado" style="background:' + color + '; color:' + colorTexto + ' !important;">' +
+                            p.estado_nombre +
+                        '</span>' +
                     '</div>';
                 contenedor.appendChild(fila);
             });

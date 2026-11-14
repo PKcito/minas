@@ -3,7 +3,7 @@
    ============================================================ */
 
 .d-none { display: none !important; }
-.d-inline { display: inline; }
+.d-inline { display: inline-flex; }
 .card-mb { margin-bottom: 2rem; }
 
 .categorias-main {
@@ -31,6 +31,32 @@
     opacity: 0.4;
     display: block;
     margin-bottom: 0.5rem;
+}
+
+.texto-inactivos-cat {
+    color: var(--texto-secundario);
+    font-size: 0.75rem;
+    margin-left: 0.25rem;
+}
+
+.badge-cat-visible {
+    background: #28a745 !important;
+    color: #fff !important;
+}
+
+.badge-cat-vacia {
+    background: #ffc107 !important;
+    color: #000 !important;
+}
+
+.badge-cat-oculta {
+    background: #6c757d !important;
+    color: #fff !important;
+}
+
+.btn-cat-bloqueada {
+    opacity: 0.75;
+    cursor: pointer;
 }
 
 .modal-box-sm {

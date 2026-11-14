@@ -19,29 +19,71 @@ if ($logueado_menu) {
     $rol_texto = $es_admin_menu ? 'Administrador' : 'Cliente';
 }
 
-// Obtener el número de WhatsApp independiente desde configuracion_pago
+// Obtener WhatsApp, Logo, Banner y Nombre del Negocio desde configuracion_pago
 $wa_telefono_menu = '584141234567';
+$logo_menu_url = '';
+$banner_menu_url = '';
+$nombre_negocio_menu = 'MINAS BURGUER';
+
 try {
     if (isset($pdo)) {
-        $cfg_wa = $pdo->query("SELECT telefono, telefono_whatsapp FROM configuracion_pago WHERE id = 1 LIMIT 1")->fetch();
-        $tel_elegido = !empty($cfg_wa['telefono_whatsapp']) ? $cfg_wa['telefono_whatsapp'] : ($cfg_wa['telefono'] ?? '');
-        if ($tel_elegido) {
-            $limpio = preg_replace('/\D/', '', $tel_elegido);
-            if (!empty($limpio)) {
-                $wa_telefono_menu = '58' . ltrim($limpio, '0');
+        $cfg_menu = $pdo->query("SELECT * FROM configuracion_pago WHERE id = 1 LIMIT 1")->fetch();
+        if ($cfg_menu) {
+            $tel_elegido = !empty($cfg_menu['telefono_whatsapp']) ? $cfg_menu['telefono_whatsapp'] : ($cfg_menu['telefono'] ?? '');
+            if ($tel_elegido) {
+                $limpio = preg_replace('/\D/', '', $tel_elegido);
+                if (!empty($limpio)) {
+                    $wa_telefono_menu = '58' . ltrim($limpio, '0');
+                }
+            }
+            if (!empty($cfg_menu['logo']) && file_exists(__DIR__ . '/../uploads/config/' . $cfg_menu['logo'])) {
+                $logo_menu_url = url('uploads/config/' . rawurlencode($cfg_menu['logo']));
+            }
+            if (!empty($cfg_menu['banner']) && file_exists(__DIR__ . '/../uploads/config/' . $cfg_menu['banner'])) {
+                $banner_menu_url = url('uploads/config/' . rawurlencode($cfg_menu['banner']));
+            }
+            if (!empty(trim($cfg_menu['nombre_negocio'] ?? ''))) {
+                $nombre_negocio_menu = trim($cfg_menu['nombre_negocio']);
             }
         }
     }
 } catch (Exception $e) {}
 
-$wa_mensaje_menu = urlencode("¡Hola Mina's Burguers! Me gustaría hacer una consulta.");
+$palabras_menu = preg_split('/\s+/', $nombre_negocio_menu);
+if (count($palabras_menu) > 1) {
+    $ultima_menu = array_pop($palabras_menu);
+    $primera_menu = implode(' ', $palabras_menu);
+    $titulo_menu_html = htmlspecialchars($primera_menu) . ' <span>' . htmlspecialchars($ultima_menu) . '</span>';
+} else {
+    $titulo_menu_html = '<span>' . htmlspecialchars($nombre_negocio_menu) . '</span>';
+}
+
+$wa_mensaje_menu = urlencode("¡Hola {$nombre_negocio_menu}! Me gustaría hacer una consulta.");
 $wa_url_menu = "https://wa.me/{$wa_telefono_menu}?text={$wa_mensaje_menu}";
+
+$estilo_cabecera_menu = '';
+if ($banner_menu_url !== '') {
+    $estilo_cabecera_menu = "background: linear-gradient(180deg, rgba(18,18,18,0.65) 0%, rgba(18,18,18,0.92) 100%), url('" . htmlspecialchars($banner_menu_url, ENT_QUOTES) . "') center/cover no-repeat; padding-top: 1.75rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--borde);";
+}
 ?>
 <button class="menu-toggle" id="menuToggle" title="Abrir menu"><i class="fas fa-bars"></i></button>
 
 <div class="offcanvas" id="offcanvasMenu">
-    <button class="close-menu" id="closeMenu" title="Cerrar menu"><i class="fas fa-times"></i></button>
-    <div class="logo-side">MINAS <span>BURGUER</span></div>
+    <button class="close-menu" id="closeMenu" title="Cerrar menu" style="z-index: 5;"><i class="fas fa-times"></i></button>
+
+    <div class="logo-side" style="display: flex; align-items: center; gap: 0.7rem; <?= $estilo_cabecera_menu ?>">
+        <?php if ($logo_menu_url !== ''): ?>
+            <img src="<?= htmlspecialchars($logo_menu_url) ?>" alt="Logo" style="width: 42px; height: 42px; object-fit: cover; border-radius: 10px; border: 2px solid var(--color-acento); background: var(--bg-principal); flex-shrink: 0;">
+        <?php else: ?>
+            <span style="width: 40px; height: 40px; border-radius: 10px; background: var(--color-acento); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">
+                <i class="fas fa-hamburger"></i>
+            </span>
+        <?php endif; ?>
+        <div style="line-height: 1.15; <?= $banner_menu_url !== '' ? 'color: #ffffff; text-shadow: 0 2px 6px rgba(0,0,0,0.8);' : '' ?>">
+            <?= $titulo_menu_html ?>
+        </div>
+    </div>
+
     <div class="user-info">
         <?php if ($logueado_menu): ?>
             <i class="fas <?= $es_admin_menu ? 'fa-user-cog' : 'fa-user-circle' ?>"></i>

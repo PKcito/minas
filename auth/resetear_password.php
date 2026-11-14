@@ -3,113 +3,131 @@ require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/validaciones.php';
 
 if (usuarioLogueado()) {
-    if (esAdmin()) { redirect('admin/dashboard.php'); }
-    else { redirect('cliente/dashboard.php'); }
+    if (esAdmin()) {
+        redirect('admin/dashboard.php');
+    } else {
+        redirect('cliente/dashboard.php');
+    }
 }
 
-$token_raw = $_GET['token'] ?? '';
+$token_raw = $_GET['token'] ?? $_POST['token'] ?? '';
 $error = '';
 $exito = '';
 $token_valido = false;
-$user = null;
+$usuario_reset = null;
 
-if (!empty($token_raw)) {
-    $decoded = base64_decode($token_raw, true);
-    if ($decoded !== false) {
-        $partes = explode('|', $decoded);
-        if (count($partes) === 3) {
+if (empty($token_raw)) {
+    $error = 'El enlace de recuperacion no es valido o esta incompleto.';
+} else {
+    $decodificado = base64_decode($token_raw, true);
+    if ($decodificado === false) {
+        $error = 'Token de recuperacion malformado.';
+    } else {
+        $partes = explode('|', $decodificado);
+        if (count($partes) !== 3) {
+            $error = 'Estructura de token invalida.';
+        } else {
             list($uid, $expira_ts, $firma_recibida) = $partes;
             $uid = intval($uid);
             $expira_ts = intval($expira_ts);
 
-            if ($uid > 0 && time() <= $expira_ts) {
+            if (time() > $expira_ts) {
+                $error = 'Este enlace de recuperacion ha expirado (valido por 1 hora). Solicita uno nuevo.';
+            } else {
                 $stmt = $pdo->prepare("SELECT id, email, password_hash, activo FROM usuarios WHERE id = ? LIMIT 1");
                 $stmt->execute([$uid]);
-                $u = $stmt->fetch();
+                $user = $stmt->fetch();
 
-                if ($u && intval($u['activo']) === 1) {
-                    $firma_esperada = hash_hmac('sha256', $uid . '|' . $expira_ts . '|' . $u['password_hash'], 'minas_burguer_secret_key_2026');
-                    if (hash_equals($firma_esperada, $firma_recibida)) {
+                if (!$user || intval($user['activo']) === 0) {
+                    $error = 'La cuenta asociada no existe o esta desactivada.';
+                } else {
+                    $payload = $user['id'] . '|' . $expira_ts;
+                    $firma_esperada = hash_hmac('sha256', $payload . '|' . $user['password_hash'], 'minas_burguer_secret_key_2026');
+
+                    if (!hash_equals($firma_esperada, $firma_recibida)) {
+                        $error = 'Este enlace ya fue utilizado o no es valido.';
+                    } else {
                         $token_valido = true;
-                        $user = $u;
+                        $usuario_reset = $user;
                     }
                 }
-            } else {
-                $error = 'El enlace de recuperacion ha expirado. Solicita uno nuevo.';
             }
         }
     }
 }
 
-if (!$token_valido && empty($error)) {
-    $error = 'El enlace de recuperacion no es valido o ya fue utilizado.';
-}
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $token_valido && $usuario_reset) {
+    $password = $_POST['password'] ?? '';
+    $confirmar = $_POST['confirmar'] ?? '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $token_valido && $user) {
-    $password_raw = $_POST['password'] ?? '';
-    $confirmar_raw = $_POST['confirmar_password'] ?? '';
-    $password = v_password($password_raw, 6, 72);
+    $pass_valida = v_password($password, 6, 72);
 
-    if ($password === null) {
-        $error = 'La contrasena debe tener entre 6 y 72 caracteres y al menos una letra.';
-    } elseif ($password_raw !== $confirmar_raw) {
+    if ($pass_valida === null) {
+        $error = 'La contrasena debe tener entre 6 y 72 caracteres.';
+    } elseif ($password !== $confirmar) {
         $error = 'Las contrasenas no coinciden.';
     } else {
         try {
-            $hash = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $pdo->prepare("UPDATE usuarios SET password_hash = ? WHERE id = ?");
-            $stmt->execute([$hash, $user['id']]);
+            $nuevo_hash = password_hash($password, PASSWORD_DEFAULT);
+            $stmtUpd = $pdo->prepare("UPDATE usuarios SET password_hash = ? WHERE id = ?");
+            $stmtUpd->execute([$nuevo_hash, $usuario_reset['id']]);
 
-            $_SESSION['registro_exitoso'] = 'Contrasena actualizada correctamente. Ya puedes iniciar sesion.';
-            redirect('auth/login.php');
+            $exito = 'Tu contrasena ha sido actualizada correctamente. Ya puedes iniciar sesion.';
+            $token_valido = false;
         } catch (PDOException $e) {
-            error_log('Resetear password error: ' . $e->getMessage());
-            $error = 'Error al actualizar la contrasena. Intenta de nuevo.';
+            error_log('Reset password error: ' . $e->getMessage());
+            $error = 'Error al guardar la nueva contrasena. Intenta nuevamente.';
         }
     }
 }
 
 partial('head', [
-    'titulo_pagina' => 'Nueva contrasena',
-    'css_pagina'    => 'auth'
+    'titulo_pagina' => 'Restablecer contrasena',
+    'css_pagina' => 'auth'
 ]);
 ?>
 <div class="auth-container">
     <div class="auth-card">
-        <h2><i class="fas fa-lock marca-acento"></i> Nueva contrasena</h2>
-        <p class="subtitulo">Ingresa y confirma tu nueva clave de acceso</p>
+        <h2><i class="fas fa-lock marca-acento"></i> Nueva clave</h2>
+        <p class="subtitulo">Crea una nueva contrasena segura para tu cuenta</p>
 
         <?php if ($error): ?>
             <div class="mensaje-error"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
 
+        <?php if ($exito): ?>
+            <div class="mensaje-exito"><?= htmlspecialchars($exito) ?></div>
+            <div class="auth-link" style="margin-top: 1.25rem;">
+                <a href="<?= url('auth/login.php') ?>" class="btn-submit" style="display: block; text-align: center; text-decoration: none; color: #fff;">
+                    <i class="fas fa-sign-in-alt"></i> Ir a Iniciar Sesion
+                </a>
+            </div>
+        <?php endif; ?>
+
         <?php if ($token_valido): ?>
             <form method="post" novalidate>
+                <input type="hidden" name="token" value="<?= htmlspecialchars($token_raw) ?>">
+
+                <div class="form-group">
+                    <label>Cuenta</label>
+                    <input type="email" value="<?= htmlspecialchars($usuario_reset['email']) ?>" disabled style="opacity: 0.7; cursor: not-allowed;">
+                </div>
+
                 <div class="form-group">
                     <label for="password">Nueva contrasena *</label>
-                    <div class="password-wrapper">
-                        <input type="password" id="password" name="password" placeholder="Minimo 6 caracteres" required minlength="6" maxlength="72">
-                        <button type="button" class="btn-toggle-pass" data-target="password" aria-label="Mostrar u ocultar contraseña" title="Mostrar contraseña">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
+                    <input type="password" id="password" name="password" required minlength="6" maxlength="72" placeholder="Minimo 6 caracteres">
                 </div>
+
                 <div class="form-group">
-                    <label for="confirmar_password">Confirmar contrasena *</label>
-                    <div class="password-wrapper">
-                        <input type="password" id="confirmar_password" name="confirmar_password" placeholder="Repite tu contrasena" required minlength="6" maxlength="72">
-                        <button type="button" class="btn-toggle-pass" data-target="confirmar_password" aria-label="Mostrar u ocultar confirmación" title="Mostrar contraseña">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
+                    <label for="confirmar">Confirmar nueva contrasena *</label>
+                    <input type="password" id="confirmar" name="confirmar" required minlength="6" maxlength="72" placeholder="Repite tu nueva contrasena">
                 </div>
-                <button type="submit" class="btn-submit">Actualizar contrasena</button>
+
+                <button type="submit" class="btn-submit">Guardar nueva contrasena</button>
             </form>
-        <?php else: ?>
-            <div class="link-inferior">
-                <a href="<?= url('auth/recuperar.php') ?>" class="btn-submit" style="display:inline-block; text-decoration:none; text-align:center;">
-                    Solicitar nuevo enlace
-                </a>
+        <?php elseif (!$exito): ?>
+            <div class="auth-link" style="margin-top: 1.25rem;">
+                <a href="<?= url('auth/recuperar.php') ?>"><i class="fas fa-redo"></i> Solicitar un nuevo enlace</a>
             </div>
         <?php endif; ?>
 
@@ -119,4 +137,4 @@ partial('head', [
     </div>
 </div>
 
-<?php partial('footer', ['js_extra_footer' => ['js/auth.js']]); ?>
+<?php partial('footer'); ?>

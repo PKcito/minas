@@ -1,15 +1,19 @@
 <?php
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/validaciones.php';
+require_once __DIR__ . '/../includes/correo.php';
 
 if (usuarioLogueado()) {
-    if (esAdmin()) { redirect('admin/dashboard.php'); }
-    else { redirect('cliente/dashboard.php'); }
+    if (esAdmin()) {
+        redirect('admin/dashboard.php');
+    } else {
+        redirect('cliente/dashboard.php');
+    }
 }
 
 $error = '';
 $exito = '';
-$enlace = '';
+$enlace_respaldo = '';
 
 // Obtener teléfono de WhatsApp del negocio desde configuracion_pago
 $tel_wa_negocio = '584141234567';
@@ -42,11 +46,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $firma = hash_hmac('sha256', $payload . '|' . $user['password_hash'], 'minas_burguer_secret_key_2026');
                     $token = base64_encode($payload . '|' . $firma);
 
-                    $enlace = url('auth/resetear_password.php?token=' . urlencode($token));
-                    $exito = 'Se ha generado tu enlace temporal de recuperacion.';
+                    $es_https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+                                || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
+                    $protocolo = $es_https ? 'https://' : 'http://';
+                    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+                    $ruta_relativa = url('auth/resetear_password.php?token=' . urlencode($token));
+
+                    if (strpos($ruta_relativa, 'http') === 0) {
+                        $enlace_absoluto = $ruta_relativa;
+                    } else {
+                        $enlace_absoluto = $protocolo . $host . '/' . ltrim($ruta_relativa, '/');
+                    }
+
+                    $detalle_error_api = '';
+                    $enviado = enviar_correo_recuperacion($user['email'], $enlace_absoluto, $detalle_error_api);
+
+                    if ($enviado) {
+                        $exito = 'Hemos enviado un enlace de recuperacion a tu correo electronico. Revisa tu bandeja de entrada o la carpeta de Spam.';
+                    } else {
+                        $exito = 'Aviso EmailJS (' . $detalle_error_api . '). Puedes usar el enlace temporal aqui abajo:';
+                        $enlace_respaldo = $enlace_absoluto;
+                    }
                 }
             } else {
-                $exito = 'Si el correo esta registrado, veras las instrucciones de recuperacion.';
+                $exito = 'Si el correo esta registrado, recibiras un enlace para restablecer tu contrasena.';
             }
         } catch (PDOException $e) {
             error_log('Recuperar password error: ' . $e->getMessage());
@@ -63,7 +86,7 @@ partial('head', [
 <div class="auth-container">
     <div class="auth-card">
         <h2><i class="fas fa-key marca-acento"></i> Recuperar</h2>
-        <p class="subtitulo">Ingresa tu correo para restablecer tu contrasena</p>
+        <p class="subtitulo">Ingresa tu correo para recibir el enlace de recuperacion</p>
 
         <?php if ($error): ?>
             <div class="mensaje-error"><?= htmlspecialchars($error) ?></div>
@@ -73,10 +96,10 @@ partial('head', [
             <div class="mensaje-exito"><?= htmlspecialchars($exito) ?></div>
         <?php endif; ?>
 
-        <?php if ($enlace): ?>
+        <?php if ($enlace_respaldo): ?>
             <div class="enlace-recuperacion-box">
-                <strong><i class="fas fa-link"></i> Enlace directo de recuperacion (Valido por 1 hora):</strong><br>
-                <a href="<?= htmlspecialchars($enlace) ?>" class="enlace-recuperacion-link">
+                <strong><i class="fas fa-link"></i> Enlace temporal de respaldo (Valido por 1 hora):</strong><br>
+                <a href="<?= htmlspecialchars($enlace_respaldo) ?>" class="enlace-recuperacion-link">
                     Haz clic aqui para crear tu nueva contrasena
                 </a>
             </div>
@@ -87,7 +110,7 @@ partial('head', [
                 <label for="email">Email registrado</label>
                 <input type="email" id="email" name="email" value="<?= htmlspecialchars($_POST['email'] ?? '') ?>" placeholder="ejemplo@correo.com" required autocomplete="off">
             </div>
-            <button type="submit" class="btn-submit">Generar enlace de recuperacion</button>
+            <button type="submit" class="btn-submit">Enviar enlace al correo</button>
         </form>
 
         <div class="link-inferior">

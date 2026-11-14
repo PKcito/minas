@@ -5,7 +5,7 @@ require_once __DIR__ . '/../includes/seguridad.php';
 require_once __DIR__ . '/../includes/paginacion.php';
 
 if (!esAdmin()) { redirect('index.php'); }
-requierePermiso('clientes'); 
+requierePermiso('clientes');
 
 aplicar_headers_seguridad();
 
@@ -113,16 +113,15 @@ $where_sql = 'WHERE ' . implode(' AND ', $where);
 $sql = "
     SELECT c.id, c.usuario_id, c.nombres, c.apellidos, c.telefono, c.fecha_nacimiento, c.notas,
            u.email, u.fecha_registro,
-           (SELECT COUNT(*) FROM pedidos p WHERE p.usuario_id = c.usuario_id) AS total_pedidos,
+           (SELECT COUNT(*) FROM pedidos p WHERE p.usuario_id = c.usuario_id AND p.estado_id != 6) AS total_pedidos,
            (SELECT COALESCE(SUM(total_pedido), 0) FROM pedidos p WHERE p.usuario_id = c.usuario_id AND p.estado_id != 6) AS total_gastado,
-           (SELECT MAX(fecha_pedido) FROM pedidos p WHERE p.usuario_id = c.usuario_id) AS ultima_compra
+           (SELECT MAX(fecha_pedido) FROM pedidos p WHERE p.usuario_id = c.usuario_id AND p.estado_id != 6) AS ultima_compra
     FROM clientes c
     JOIN usuarios u ON c.usuario_id = u.id
     $where_sql
     ORDER BY $order_sql
 ";
 
-// Paginación de clientes (10 por página)
 $pag_clientes = paginar($pdo, $sql, $params, 10);
 $clientes = $pag_clientes['items'];
 
@@ -158,7 +157,7 @@ partial('head', [
     'titulo_pagina' => 'Clientes',
     'cargar_sweetalert' => true,
     'css_pagina' => 'admin',
-    'css_extra' => ['css/paginacion.css', 'css/clientes.css']
+    'css_extra' => ['css/paginacion.css', 'css/clientes.css', 'css/cliente.css']
 ]);
 ?>
 
@@ -173,63 +172,58 @@ partial('head', [
 
     <div class="kpi-grid">
         <div class="kpi-card">
-            <div class="icono"><i class="fas fa-users"></i></div>
-            <div class="info">
+            <div class="kpi-icon ventas"><i class="fas fa-users"></i></div>
+            <div class="kpi-info">
                 <div class="label">Total</div>
                 <div class="valor"><?= number_format($kpi_total) ?></div>
             </div>
         </div>
         <div class="kpi-card">
-            <div class="icono"><i class="fas fa-user-plus"></i></div>
-            <div class="info">
+            <div class="kpi-icon pedidos"><i class="fas fa-user-plus"></i></div>
+            <div class="kpi-info">
                 <div class="label">Nuevos este mes</div>
                 <div class="valor"><?= number_format($kpi_nuevos_mes) ?></div>
             </div>
         </div>
         <div class="kpi-card">
-            <div class="icono"><i class="fas fa-shopping-bag"></i></div>
-            <div class="info">
+            <div class="kpi-icon promedio"><i class="fas fa-shopping-bag"></i></div>
+            <div class="kpi-info">
                 <div class="label">Activos (30d)</div>
                 <div class="valor"><?= number_format($kpi_activos) ?></div>
             </div>
         </div>
         <div class="kpi-card">
-            <div class="icono"><i class="fas fa-receipt"></i></div>
-            <div class="info">
+            <div class="kpi-icon ticket"><i class="fas fa-receipt"></i></div>
+            <div class="kpi-info">
                 <div class="label">Ticket promedio</div>
                 <div class="valor">$<?= number_format($kpi_ticket, 2) ?></div>
             </div>
         </div>
     </div>
 
-    <form method="get" class="filtros-card">
-        <div class="filtros-grid filtros-clientes-grid">
-            <div class="filtro-item">
-                <label>Buscar</label>
-                <input type="text" name="buscar" value="<?= htmlspecialchars($buscar) ?>" placeholder="Nombre, email o telefono" maxlength="100">
-            </div>
-            <div class="filtro-item">
-                <label>Ordenar por</label>
-                <select name="orden">
-                    <option value="recientes" <?= $orden === 'recientes' ? 'selected' : '' ?>>Mas recientes</option>
-                    <option value="nombre" <?= $orden === 'nombre' ? 'selected' : '' ?>>Nombre A-Z</option>
-                    <option value="mas_pedidos" <?= $orden === 'mas_pedidos' ? 'selected' : '' ?>>Mas pedidos</option>
-                    <option value="mas_gastado" <?= $orden === 'mas_gastado' ? 'selected' : '' ?>>Mas gastado</option>
-                </select>
-            </div>
-            <button type="submit" class="btn-filtro btn-filtro-aplicar"><i class="fas fa-search"></i> Aplicar</button>
-            <?php if ($buscar !== '' || $orden !== 'recientes'): ?>
-                <a href="<?= url('admin/clientes.php') ?>" class="btn-filtro btn-filtro-limpiar"><i class="fas fa-times"></i> Limpiar</a>
-            <?php endif; ?>
+    <form method="get" class="filtros-card filtros-clientes-grid">
+        <div class="filtro-item">
+            <label>Buscar</label>
+            <input type="text" name="buscar" value="<?= htmlspecialchars($buscar) ?>" placeholder="Nombre, email o telefono..." maxlength="100">
         </div>
+        <div class="filtro-item">
+            <label>Ordenar por</label>
+            <select name="orden">
+                <option value="recientes" <?= $orden === 'recientes' ? 'selected' : '' ?>>Mas recientes</option>
+                <option value="nombre" <?= $orden === 'nombre' ? 'selected' : '' ?>>Nombre (A-Z)</option>
+                <option value="mas_pedidos" <?= $orden === 'mas_pedidos' ? 'selected' : '' ?>>Mas pedidos</option>
+                <option value="mas_gastado" <?= $orden === 'mas_gastado' ? 'selected' : '' ?>>Mayor gasto</option>
+            </select>
+        </div>
+        <button type="submit" class="btn-filtro btn-filtro-aplicar"><i class="fas fa-search"></i> Aplicar</button>
+        <?php if ($buscar !== '' || $orden !== 'recientes'): ?>
+            <a href="<?= url('admin/clientes.php') ?>" class="btn-filtro btn-filtro-limpiar"><i class="fas fa-times"></i> Limpiar</a>
+        <?php endif; ?>
     </form>
 
     <div class="tabla-card">
-        <?php if (count($clientes) === 0): ?>
-            <div class="sin-resultados">
-                <i class="fas fa-user-slash icono-sin-clientes"></i>
-                <p>No se encontraron clientes.</p>
-            </div>
+        <?php if (empty($clientes)): ?>
+            <p class="tabla-vacia">No se encontraron clientes.</p>
         <?php else: ?>
             <div class="table-responsive">
                 <table class="tabla-admin">
@@ -263,7 +257,7 @@ partial('head', [
                                 <td><?= $c['ultima_compra'] ? date('d/m/Y', strtotime($c['ultima_compra'])) : '-' ?></td>
                                 <td>
                                     <div class="acciones-container">
-                                        <button type="button" class="btn btn-info" onclick='verPedidos(<?= json_encode(["id" => intval($c["id"]), "nombre" => $c["nombres"] . " " . $c["apellidos"], "total_pedidos" => intval($c["total_pedidos"]), "total_gastado" => $c["total_gastado"]], JSON_HEX_APOS | JSON_HEX_QUOT) ?>, <?= json_encode($pc, JSON_HEX_APOS | JSON_HEX_QUOT) ?>)' title="Ver pedidos del cliente">
+                                        <button type="button" class="btn btn-info" onclick='verPedidos(<?= json_encode(["id" => intval($c["id"]), "usuario_id" => intval($c["usuario_id"]), "nombre" => $c["nombres"] . " " . $c["apellidos"], "total_pedidos" => intval($c["total_pedidos"]), "total_gastado" => $c["total_gastado"]], JSON_HEX_APOS | JSON_HEX_QUOT) ?>, <?= json_encode($pc, JSON_HEX_APOS | JSON_HEX_QUOT) ?>)' title="Ver pedidos del cliente">
                                             <i class="fas fa-receipt"></i> Pedidos
                                         </button>
                                         <button type="button" class="btn btn-warning" onclick='editarCliente(<?= json_encode($c, JSON_HEX_APOS | JSON_HEX_QUOT) ?>)' title="Editar datos del cliente">
@@ -338,7 +332,7 @@ partial('head', [
             </div>
             <div class="modal-acciones">
                 <button type="button" class="btn btn-secondary btn-cancelar-modal" onclick="cerrarModalEditar()">Cancelar</button>
-                <button type="submit" class="btn-admin"><i class="fas fa-save"></i> Guardar cambios</button>
+                <button type="submit" class="btn-admin">Guardar cambios</button>
             </div>
         </form>
     </div>
@@ -347,8 +341,8 @@ partial('head', [
 <script>
 window.CLIENTES_CONFIG = {
     coloresEstados: <?= json_encode($colores_estados) ?>,
-    urlPedidosAdmin: '<?= url('admin/pedidos.php?cliente_id=') ?>',
-    urlVerDetalle: '<?= url('cliente/ver_detalle.php?id=') ?>'
+    urlPedidosAdmin: <?= json_encode(url('admin/pedidos.php?cliente=')) ?>,
+    urlVerDetalle: <?= json_encode(url('cliente/ver_detalle.php?id=')) ?>
 };
 </script>
 

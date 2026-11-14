@@ -13,11 +13,50 @@
     color: var(--texto-secundario);
 }
 
-/* Alineación vertical y espaciado limpio en la tabla de pedidos */
-.tabla-admin th,
-.tabla-admin td {
+/* ============================================================
+   ESTRUCTURA DE LA TABLA (Márgenes, bordes y scroll limpio)
+   ============================================================ */
+.tabla-card {
+    background: var(--bg-secundario);
+    border: 1px solid var(--borde);
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: 0 4px 12px var(--sombra);
+    margin-bottom: 2rem;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 10px;
+}
+
+table.tabla-admin {
+    width: 100%;
+    min-width: 980px;
+    border-collapse: collapse !important;
+}
+
+/* Alineación vertical y espaciado uniforme en todas las celdas */
+table.tabla-admin th,
+table.tabla-admin td {
     vertical-align: middle !important;
-    padding: 0.75rem 0.65rem !important;
+    padding: 0.75rem 0.7rem !important;
+}
+
+/* Fijar y alinear la columna de Acciones (última columna) */
+table.tabla-admin th:last-child,
+table.tabla-admin td:last-child {
+    width: 245px !important;
+    min-width: 245px !important;
+    white-space: nowrap !important;
+    text-align: left !important;
+    padding-left: 0.85rem !important;
+    padding-right: 0.85rem !important;
 }
 
 .celda-centrada {
@@ -82,15 +121,31 @@
     transform: translateY(-1px);
 }
 
-/* Contenedor de botones de acción alineado en una sola fila */
+/* ============================================================
+   CONTENEDOR DE ACCIONES PERFECTAMENTE ALINEADO EN FILA
+   ============================================================ */
 .acciones-container {
-    display: flex !important;
+    display: inline-flex !important;
     align-items: center !important;
     justify-content: flex-start !important;
-    gap: 0.35rem !important;
+    gap: 0.4rem !important;
     flex-wrap: nowrap !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: 32px !important;
 }
 
+/* Formularios dentro de acciones sin márgenes fantasma */
+.form-inline,
+.acciones-container form {
+    display: inline-flex !important;
+    align-items: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    flex-shrink: 0 !important;
+}
+
+/* Botones principales de texto (Cobrar, Confirmar, Preparar, etc.) */
 .acciones-container .btn,
 .acciones-container a.btn,
 .acciones-container button.btn {
@@ -100,6 +155,7 @@
     gap: 0.35rem !important;
     height: 32px !important;
     min-height: 32px !important;
+    min-width: 112px !important;
     padding: 0 0.75rem !important;
     border-radius: 8px !important;
     font-size: 0.78rem !important;
@@ -109,20 +165,64 @@
     white-space: nowrap !important;
     box-sizing: border-box !important;
     margin: 0 !important;
+    flex-shrink: 0 !important;
 }
 
-/* Botones cuadrados para acciones de solo ícono */
+/* Botones cuadrados para acciones de solo ícono (Cancelar, Historial, Ver) */
 .btn-icon-only,
-.acciones-container .btn-icon-only {
+.acciones-container .btn-icon-only,
+.acciones-container a.btn-icon-only,
+.acciones-container button.btn-icon-only {
     width: 32px !important;
     min-width: 32px !important;
+    max-width: 32px !important;
     height: 32px !important;
+    min-height: 32px !important;
     padding: 0 !important;
+    margin: 0 !important;
     font-size: 0.85rem !important;
     border-radius: 8px !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
+    flex-shrink: 0 !important;
+}
+
+/* Etiquetas de Estado Final (Completado / Cancelado) y Expirado
+   Con el mismo alto (32px) y ancho mínimo (112px) que el botón principal
+   para que los íconos de la derecha queden alineados en columna recta */
+.estado-final-text,
+.accion-expirada {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.3rem !important;
+    height: 32px !important;
+    min-height: 32px !important;
+    min-width: 112px !important;
+    padding: 0 0.65rem !important;
+    margin: 0 !important;
+    border-radius: 8px !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+    box-sizing: border-box !important;
+    flex-shrink: 0 !important;
+}
+
+.estado-final-text {
+    color: var(--texto-secundario);
+    background: var(--bg-principal);
+    border: 1px solid var(--borde);
+    font-style: normal;
+}
+
+.accion-expirada {
+    color: #dc3545;
+    background: rgba(220, 53, 69, 0.1);
+    border: 1px solid rgba(220, 53, 69, 0.25);
+    font-weight: 700 !important;
 }
 
 /* Botones con colores específicos */
@@ -144,22 +244,26 @@
     color: #fff !important;
 }
 
-/* Colores de texto */
-.text-cancelados { color: #dc3545 !important; }
+.btn-danger {
+    background: #dc3545 !important;
+    color: #fff !important;
+}
+.btn-danger:hover {
+    background: #c82333 !important;
+    color: #fff !important;
+}
+
+/* Colores de texto y temporizador */
+.text-cancelados {
+    color: #dc3545 !important;
+}
+
 .metodo-pago-text {
     color: var(--texto-secundario);
     font-size: 0.72rem;
     margin-top: 0.2rem;
 }
-.estado-final-text {
-    font-size: 0.75rem;
-    color: var(--texto-secundario);
-    font-style: italic;
-    margin-right: 0.3rem;
-    white-space: nowrap;
-}
 
-/* Temporizador */
 .timer-container {
     color: #dc3545;
     font-weight: 700;
@@ -168,22 +272,9 @@
     margin-top: 0.25rem;
 }
 
-/* Acciones expiradas */
-.accion-expirada {
-    font-size: 0.75rem;
-    color: #dc3545;
-    font-weight: 700;
-    margin-right: 0.3rem;
-    white-space: nowrap;
-}
-
-/* Formularios en línea */
-.form-inline {
-    display: inline-flex !important;
-    margin: 0 !important;
-}
-
-/* Modal de Historial */
+/* ============================================================
+   MODAL DE HISTORIAL
+   ============================================================ */
 .historial-modal-contenido {
     margin-top: 1rem;
 }
@@ -217,7 +308,7 @@
 }
 
 /* ============================================================
-   BARRA DE RESUMEN (rediseño para integrarse con las cards)
+   BARRA DE RESUMEN (Cards superiores)
    ============================================================ */
 .resumen-barra {
     display: grid !important;
@@ -285,10 +376,13 @@
     font-weight: 800;
 }
 
-.resumen-cancelados .resumen-valor { color: #dc3545; }
+.resumen-cancelados .resumen-valor {
+    color: #dc3545;
+}
 
-/*MODAL DE COMPROBANTE - Diseño de tarjeta centrada*/
-
+/* ============================================================
+   MODAL DE COMPROBANTE
+   ============================================================ */
 .modal-comprobante {
     position: fixed;
     inset: 0;
@@ -308,7 +402,7 @@
     padding: 1.5rem;
     width: 100%;
     max-width: 800px;
-    max-height: 90vh; 
+    max-height: 90vh;
     display: flex;
     flex-direction: column;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
@@ -362,7 +456,7 @@
     height: auto;
     object-fit: contain;
     border-radius: 8px;
-    background: #fff; 
+    background: #fff;
     padding: 4px;
 }
 
@@ -387,38 +481,10 @@
     font-size: 0.9rem;
     font-weight: 600;
     transition: 0.2s;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .comprobante-full-link:hover {
     background: var(--color-acento-hover);
     transform: scale(0.97);
-}
-
-/* ============================================================
-   ESTRUCTURA DE LA TABLA (Márgenes y scroll)
-   ============================================================ */
-.tabla-card {
-    background: var(--bg-secundario);
-    border: 1px solid var(--borde);
-    border-radius: 16px;
-    padding: 1.25rem; /* 🔥 Esto le da el margen interno que faltaba */
-    box-shadow: 0 4px 12px var(--sombra);
-    margin-bottom: 2rem;
-    width: 100%;
-    max-width: 100%;
-    overflow: hidden; /* Mantiene los bordes redondeados limpios */
-}
-
-.table-responsive {
-    width: 100%;
-    overflow-x: auto; /* Permite hacer scroll horizontal si la pantalla es muy pequeña */
-    -webkit-overflow-scrolling: touch;
-    border-radius: 8px;
-}
-
-.tabla-admin {
-    width: 100%;
-    min-width: 950px; /* 🔥 Evita que las columnas se aplasten y corten los botones */
-    border-collapse: collapse;
 }

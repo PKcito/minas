@@ -26,10 +26,37 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Solo permitir números en teléfono y cédula
-    document.querySelectorAll('input[name="numero_tel"], input[name="numero_cedula"]').forEach(function(input) {
+    // Solo permitir números en teléfono, WhatsApp y cédula
+    document.querySelectorAll('input[name="numero_tel"], input[name="numero_wa"], input[name="numero_cedula"]').forEach(function(input) {
         input.addEventListener('input', function() {
             this.value = this.value.replace(/\D/g, '');
         });
     });
+
+    // Vista previa en vivo para Logo y Banner
+    function configurarPreview(inputId, imgId, placeholderId) {
+        const input = document.getElementById(inputId);
+        const img = document.getElementById(imgId);
+        const placeholder = document.getElementById(placeholderId);
+
+        if (!input || !img) return;
+
+        input.addEventListener('change', function() {
+            const file = this.files && this.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                img.src = e.target.result;
+                img.classList.remove('d-none');
+                if (placeholder) {
+                    placeholder.classList.add('d-none');
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    configurarPreview('inputLogo', 'imgPreviewLogo', 'placeholderLogo');
+    configurarPreview('inputBanner', 'imgPreviewBanner', 'placeholderBanner');
 });
