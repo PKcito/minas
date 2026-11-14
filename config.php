@@ -1,6 +1,6 @@
 <?php
-ini_set('display_errors', 0);
-ini_set('display_startup_errors', 0);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 date_default_timezone_set('America/Caracas');
@@ -21,7 +21,6 @@ function leer_env_db($claves, $defecto = '') {
     return $defecto;
 }
 
-// Lee indistintamente si usas el formato DB_ o el formato MYSQL_
 $host   = leer_env_db(['DB_HOST', 'MYSQLHOST', 'RAILWAY_PRIVATE_DOMAIN'], 'localhost');
 $port   = leer_env_db(['DB_PORT', 'MYSQLPORT'], '3306');
 $dbname = leer_env_db(['DB_DATABASE', 'MYSQLDATABASE', 'MYSQL_DATABASE'], 'railway');
@@ -44,7 +43,6 @@ header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 header('Pragma: no-cache');
 header('Expires: 0');
 
-// Conexión PDO con reintentos inteligentes para Railway
 $intentos = 5;
 $pdo = null;
 while ($intentos > 0) {
